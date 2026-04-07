@@ -10,17 +10,34 @@
             --blue: #5b9dff;
             --green: #68d391;
             --orange: #ffb067;
+            --pink: #ffb3c6; 
             --widget-bg: #ffffff;
             --text-main: #444;
             --text-gray: #a3a3a3;
             --cc-bg: rgba(245, 245, 250, 0.5); 
+            --phone-frame: #1a1a1a;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
 
-        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #e0e0e5; font-family: -apple-system, "SF Pro Rounded", sans-serif; overflow: hidden; }
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #e0e0e5; font-family: -apple-system, "SF Pro Rounded", sans-serif; overflow: hidden; transition: background 0.3s; }
 
-        #phone { width: 320px; height: 650px; background: var(--ios-bg); border-radius: 45px; border: 8px solid #1a1a1a; position: relative; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.15), inset 0 0 0 1px #ddd; }
+        #phone { width: 320px; height: 650px; background: var(--ios-bg); border-radius: 45px; border: 8px solid var(--phone-frame); position: relative; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.15), inset 0 0 0 1px #ddd; transition: all 0.3s; }
+        
+        /* 真实全屏模式修复：强制铺满屏幕尺寸 */
+        body.is-fullscreen { background: #000; }
+        body.is-fullscreen #phone { width: 100vw; height: 100vh; border-radius: 0; border: none; box-shadow: none; max-width: 100%; margin: 0; }
+        
+        /* 修复全屏宽度超限 */
+        body.is-fullscreen #screen-slider { max-width: 100%; margin: 0 auto; }
+        body.is-fullscreen #dock { max-width: 90%; margin: 0 auto; left: 0; right: 0; }
+
+        /* --- 灵动岛 --- */
+        #dynamic-island { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); height: 32px; background: #000; border-radius: 20px; display: none; align-items: center; justify-content: space-between; padding: 0 10px; z-index: 5500; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.3s; width: 130px;}
+        #di-ava { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; background: #333; }
+        #di-text { flex: 1; margin: 0 8px; color: #fff; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+        #di-play { width: 16px; fill: #fff; }
+        #di-play-img { width: 22px !important; height: 22px !important; object-fit: contain; } /* 图标放大 */
 
         /* --- 状态栏 --- */
         .status-bar { height: 40px; padding: 0 25px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; z-index: 4500; position: relative; color: #333; }
@@ -165,14 +182,14 @@
         .yx-empty-state { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #aaa; font-size: 14px; gap: 15px; }
         .yx-empty-state svg { width: 50px; stroke: #ccc; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
         
-        .yx-header { display: flex; justify-content: space-between; align-items: center; padding: 45px 20px 5px; flex-shrink: 0; }
+        .yx-header { display: flex; justify-content: space-between; align-items: center; padding: 45px 20px 5px; flex-shrink: 0; position: relative; z-index: 100; }
         .yx-header-left { display: flex; align-items: center; gap: 12px; }
         .yx-icon-btn { width: 34px; height: 34px; border-radius: 50%; background: #f2f2f7; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; position: relative;}
         .yx-icon-btn:active { transform: scale(0.9); }
         .yx-icon-btn svg { width: 18px; height: 18px; stroke: #444; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
         .yx-title { font-size: 17px; font-weight: 700; color: #333; letter-spacing: 0.5px; }
 
-        /* --- 邮票区域 缩短左侧，留空中间 --- */
+        /* --- 邮票区域 --- */
         .yx-stamp-wrapper { position: relative; margin: 10px 20px; height: 140px; display: flex; justify-content: space-between; flex-shrink: 0; } 
         .yx-stamp-part { position: relative; background: #fff; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.04); overflow: hidden; z-index:4;}
         .yx-stamp-part::before { content: ''; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px; border: 1px dashed rgba(0,0,0,0.08); border-radius: 10px; pointer-events: none; z-index: 10; }
@@ -223,9 +240,8 @@
         .yx-contacts-title { margin: 5px 22px 10px; font-size: 14px; font-weight: 600; color: #333; flex-shrink: 0; display:flex; justify-content:space-between;}
         .yx-contacts-list { padding: 0 20px; display: flex; flex-direction: column; }
         
-        .yx-contact-item { position: relative; margin-bottom: 10px; background: transparent; overflow: hidden; /* 防止左滑红底漏出 */ }
+        .yx-contact-item { position: relative; margin-bottom: 10px; background: transparent; overflow: hidden; }
         .yx-contact-inner-wrap { position: relative; border-radius: 12px; background: #fff; overflow:hidden;}
-        /* 更新置顶状态的新浅灰色短虚线 */
         .yx-contact-item.pinned .yx-contact-inner-wrap { 
             border: none;
             background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23cccccc' stroke-width='3' stroke-dasharray='4%2c 5' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
@@ -240,7 +256,6 @@
         .c-avatar-box { position: relative; width: 44px; height: 44px; flex-shrink: 0; display:flex; justify-content:center; align-items:center;}
         .c-avatar { width: 100%; height: 100%; overflow:hidden; position:relative; background:#f0f0f0;}
         .c-avatar img { width:100%; height:100%; object-fit:cover; display:none;}
-        /* 移除 preserve-3d 和 will-change，修复性能卡顿 */
         .c-avatar-frame { position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none;}
         
         .c-info { flex: 1; border-bottom: 1px solid #f2f2f7; padding-bottom: 12px; display: flex; flex-direction: column; justify-content: center; overflow:hidden;}
@@ -269,27 +284,42 @@
         .yx-chat-sys { align-self: center; background: rgba(0,0,0,0.05); padding: 4px 10px; border-radius: 10px; font-size: 11px; color: #888; margin-bottom: 10px; text-align:center;}
         .chat-role-tag { font-size:9px; color:#fff; border-radius:4px; padding:1px 4px; margin-bottom:2px; display:inline-block; }
         
+        /* 语音气泡相关样式 */
+        .yx-voice-bubble { padding: 10px 14px; border-radius: 18px; background: #fff; color: #333; box-shadow:0 2px 8px rgba(0,0,0,0.03); border:1px solid rgba(0,0,0,0.03); cursor: pointer; display: inline-block; }
+        .yx-chat-bubble.right .yx-voice-bubble { background: transparent; border: none; box-shadow: none; padding: 0; color: inherit; }
+        .v-bar { display:flex; align-items:center; gap:8px; font-size:14px; font-weight:bold; }
+        .voice-anim { width:20px; height:15px; display:flex; align-items:center; gap:2px; justify-content:center; }
+        .voice-anim span { display:block; width:3px; background:currentColor; border-radius:2px; animation: v-bounce 1s infinite; }
+        .voice-anim span:nth-child(1) { height:40%; animation-delay:0.1s;}
+        .voice-anim span:nth-child(2) { height:80%; animation-delay:0.3s;}
+        .voice-anim span:nth-child(3) { height:100%; animation-delay:0.5s;}
+        .voice-anim span:nth-child(4) { height:60%; animation-delay:0.7s;}
+        @keyframes v-bounce { 0%, 100% { transform: scaleY(0.5); } 50% { transform: scaleY(1); } }
+        
+        .group-announce-banner { background: rgba(255, 248, 225, 0.9); backdrop-filter: blur(10px); color: #d97706; padding: 10px 15px; font-size: 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(253, 230, 138, 0.5); cursor: pointer; flex-shrink:0; z-index:9;}
+        
         @keyframes typingDots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } 100% { content: ''; } }
         .typing-dots::after { content: ''; animation: typingDots 1.5s infinite; }
         
-        .chat-menu { position: absolute; background: #333; color: #fff; padding: 6px 12px; border-radius: 8px; display: flex; gap: 15px; font-size: 12px; z-index: 2000; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .chat-menu::after { content:''; position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); border-width:5px 5px 0; border-style:solid; border-color:#333 transparent transparent transparent; }
-        .c-m-item { cursor: pointer; }
+        .chat-menu { position: absolute; background: #333; color: #fff; padding: 10px 12px; border-radius: 12px; gap: 10px; font-size: 12px; z-index: 2000; display: none; box-shadow: 0 8px 25px rgba(0,0,0,0.25); width: 220px; flex-wrap: wrap; justify-content: space-around; transition: opacity 0.2s;}
+        .chat-menu::after { content:''; position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); border-width:6px 6px 0; border-style:solid; border-color:#333 transparent transparent transparent; }
+        .c-m-item { cursor: pointer; padding: 4px 6px; text-align: center; }
+        .c-m-item:active { opacity: 0.7; }
 
         .chat-plus-panel { height: 0; background: rgba(244,244,247,0.9); backdrop-filter: blur(10px); border-top: 1px solid rgba(0,0,0,0.05); overflow: hidden; transition: height 0.3s; display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 0 20px; align-content: center; justify-items: center;}
         .chat-plus-panel.open { height: 180px; }
-        .cp-icon { width: 50px; height: 50px; background: #fff; border-radius: 14px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .cp-icon { width: 50px; height: 50px; background: #fff; border-radius: 14px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); cursor:pointer;}
         .cp-icon svg { width: 24px; stroke: #555; fill: none; stroke-width: 1.5; }
-        .cp-text { font-size: 11px; color: #888; margin-top: 6px; text-align: center; }
+        .cp-text { font-size: 11px; color: #888; margin-top: 6px; text-align: center; pointer-events:none;}
 
         /* 弹窗底部卡片 */
         .bottom-sheet-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:1800; display:none; opacity:0; transition:0.3s; }
         .bottom-sheet { position: absolute; bottom:0; left:0; width:100%; max-height:85%; background:#f4f4f7; border-radius:24px 24px 0 0; z-index:1801; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); display:flex; flex-direction:column; }
         .bottom-sheet.show { transform:translateY(0); }
-        .bs-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 10px auto; }
+        .bs-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 10px auto; flex-shrink:0;}
         .bs-content { flex: 1; overflow-y: auto; padding: 0 15px 20px; -webkit-overflow-scrolling: touch; }
 
-        .yx-s-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.02); margin-bottom: 15px; }
+        .yx-s-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.02); margin-bottom: 15px; flex-shrink: 0;}
         .yx-s-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; position: relative; cursor: pointer; transition: 0.2s; }
         .yx-s-row:active { background: #fdfdfd; }
         .yx-s-row:not(:last-child)::after { content: ''; position: absolute; bottom: 0; left: 20px; right: 0; height: 1px; background: #f0f0f0; }
@@ -326,8 +356,8 @@
         .api-tab.active { color:var(--blue); border-bottom-color:var(--blue); }
         .api-page { flex:1; overflow-y:auto; padding:15px; display:none; }
         .api-page.show { display:block; }
-        .api-input { width:100%; padding:12px; border:1px solid #ddd; border-radius:10px; margin-bottom:15px; font-size:13px; outline:none;}
-        .api-btn { width:100%; padding:12px; background:var(--blue); color:#fff; border-radius:10px; text-align:center; font-weight:bold; cursor:pointer; margin-bottom:10px; transition:0.2s;}
+        .api-input { width:100%; padding:12px; border:1px solid #ddd; border-radius:10px; margin-bottom:15px; font-size:13px; outline:none; box-sizing:border-box;}
+        .api-btn { width:100%; padding:12px; background:var(--blue); color:#fff; border-radius:10px; text-align:center; font-weight:bold; cursor:pointer; margin-bottom:10px; transition:0.2s; box-sizing:border-box;}
         .api-btn:active { opacity: 0.8; transform:scale(0.98); }
         .api-log-item { background:#fff; padding:10px; border-radius:10px; margin-bottom:10px; font-size:12px; box-shadow:0 2px 5px rgba(0,0,0,0.02);}
 
@@ -339,38 +369,45 @@
         /* 悬浮球 */
         #assist-touch { touch-action: none; position: absolute; width: 46px; height: 46px; background: rgba(0,0,0,0.25); backdrop-filter: blur(5px); border-radius: 50%; right: 10px; bottom: 150px; z-index: 2000; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; }
         .touch-inner { width: 32px; height: 32px; background: rgba(255,255,255,0.6); border-radius: 50%; pointer-events: none;}
-        #touch-nav { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 180px; background: rgba(240,240,245,0.85); backdrop-filter: blur(15px); border-radius: 24px; padding: 16px; display: none; grid-template-columns: 1fr 1fr; gap: 15px; z-index: 2001; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); }
+        #touch-nav { position: absolute; width: 180px; background: rgba(240,240,245,0.85); backdrop-filter: blur(15px); border-radius: 24px; padding: 16px; display: none; grid-template-columns: 1fr 1fr; gap: 15px; z-index: 2001; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); }
         .n-item { display: flex; flex-direction: column; align-items: center; color: #444; font-size: 11px; font-weight: 500; cursor: pointer; }
         .n-icon { height: 42px; width: 42px; background: #fff; border-radius: 14px; margin-bottom: 8px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .n-icon svg { width: 22px; height: 22px; stroke: #555; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
         /* ==== 🌟 全新“我的”主页专属样式 ==== */
-        .my-main-card { position: relative; width: 100%; height: 120px; background: #fff; border-radius: 15px 15px 50px 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); margin-top: 15px; overflow: visible; display: flex; flex-direction: column;}
+        .my-main-card { position: relative; width: 100%; height: 120px; background: #ffffff; border-radius: 15px 15px 50px 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); margin-top: 15px; overflow: visible; display: flex; flex-direction: column; max-width:400px; margin-left:auto; margin-right:auto;}
         
-        /* 完善凹槽遮罩与右侧延长，整体上移3px (-3 -> -6) */
-        .my-small-card { position: absolute; top: -6px; left: 0; width: 180px; height: 50px; background: #2c2c2e; border-radius: 15px 50px 50px 0; display: flex; align-items: center; z-index: 5; mask-image: radial-gradient(circle 26px at 152px 24px, transparent 99%, #000 100%); -webkit-mask-image: radial-gradient(circle 26px at 152px 24px, transparent 99%, #000 100%); }
+        /* 居中完美半圆凹槽 */
+        .my-small-card { position: absolute; top: -6px; left: 50%; transform:translateX(-50%); width: 60px; height: 25px; background: #fdfdfd; border-radius: 0 0 30px 30px; display: flex; align-items: center; z-index: 5; box-shadow: inset 0 -2px 5px rgba(0,0,0,0.05);}
         
-        /* 头像整体往左移 */
-        .my-ava-base { position: absolute; top: -4px; left: 130px; width: 44px; height: 44px; background: #e5e5ea; border-radius: 50%; z-index: 7; display: flex; justify-content: center; align-items: center; overflow: hidden; cursor:pointer; box-shadow: none; }
+        /* 头像纯圆 (已根据要求上移8px，从-20px调整为-28px) */
+        .my-ava-base { position: absolute; top: -28px; left: 50%; transform:translateX(-50%); width: 44px; height: 44px; background: #e5e5ea; border-radius: 50%; z-index: 7; display: flex; justify-content: center; align-items: center; overflow: hidden; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid #fff;}
         .my-ava-base img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .my-ava-frame { position: absolute; top: -6px; left: 50%; transform: translate(-50%, -50%); z-index: 8; pointer-events: none;}
         
-        .my-ava-frame { position: absolute; top: 18px; left: 152px; transform: translate(-50%, -50%); z-index: 8; pointer-events: none;}
-        
-        .my-yuxin-text { position: absolute; left: 15px; top: 15px; font-size: 13px; font-weight: 800; color: #fff; letter-spacing: 1px; z-index: 10; font-family: "SF Pro Rounded", sans-serif; pointer-events:none;}
+        .my-yuxin-text { position: absolute; left: 15px; top: 15px; font-size: 13px; font-weight: 800; color: #333; letter-spacing: 1px; z-index: 10; font-family: "SF Pro Rounded", sans-serif; pointer-events:none;}
         
         .my-status-dot { position: absolute; top: 18px; right: 65px; width: 10px; height: 10px; border-radius: 50%; background: #68d391; z-index: 10; cursor: pointer; border: 2px solid #fff; box-shadow: none; }
-        .my-status-badge { position: absolute; top: 14px; right: 15px; background: #f0f0f5; color: #555; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; cursor: pointer; z-index: 10; }
+        .my-status-badge { position: absolute; top: 14px; right: 15px; background: rgba(255,255,255,0.8); color: var(--pink); padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; cursor: pointer; z-index: 10; }
         
-        .my-decor-area { position: absolute; top: 60px; left: 15px; display: flex; align-items: center; z-index: 5; gap: 6px; }
-        .my-fish-svg { width: 35px; height: 25px; fill: #5b9dff; }
-        .my-rhombus { width: 10px; height: 10px; background: #ffb067; border-radius: 3px; transform: rotate(45deg); margin-left: 2px; }
-        .my-dash-line { width: 40px; height: 25px; position: absolute; top: 38px; left: 55px; z-index: 4; pointer-events: none; }
-        .my-dash-line path { fill: none; stroke: #ccc; stroke-width: 1.5; stroke-dasharray: 3 3; stroke-linecap: round; }
+        .my-decor-area { position: absolute; top: 50px; left: 15px; display: flex; align-items: center; z-index: 5; gap: 15px; }
+        .my-fish-svg { width: 35px; height: 25px; fill: #e5e5ea; }
+        .my-rhombus { width: 10px; height: 10px; background: #e5e5ea; border-radius: 3px; transform: rotate(45deg); opacity: 0.8;}
         
+        /* 拍立得 */
+        .my-polaroid { width: 50px; height: 60px; background: #fff; border: 1px solid #e0e0e0; box-shadow: 2px 4px 10px rgba(0,0,0,0.06); padding: 3px; display: flex; flex-direction: column; align-items: center; transform: rotate(-4deg); z-index: 10; cursor: pointer; position:relative; }
+        .p-tape { position: absolute; top: -6px; width: 25px; height: 10px; background: #e0e0e0; transform: rotate(3deg); box-shadow: 0 1px 2px rgba(0,0,0,0.05); opacity: 0.8;}
+        .p-inner { width: 100%; height: 40px; background: #e5e5ea; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; display: flex; justify-content: center; align-items: center; }
+
         .my-tags-col { position: absolute; bottom: 15px; right: 15px; display: flex; flex-direction: column; gap: 8px; z-index: 10; align-items: flex-end;}
-        .my-tag { background: #f4f4f7; padding: 4px 10px; border-radius: 12px; font-size: 11px; color: #555; font-weight: 600; display: flex; align-items: center; gap: 5px; cursor: pointer; }
-        .my-tag svg { width: 14px; height: 14px; fill: #ffb3c6; stroke: none; }
+        .my-tag { background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 12px; font-size: 11px; color: #333; font-weight: bold; display: flex; align-items: center; gap: 5px; cursor: pointer; box-shadow:0 2px 5px rgba(0,0,0,0.05);}
+        .my-tag svg { width: 14px; height: 14px; fill: var(--pink); stroke: none; }
         
+        .my-action-menu { display:flex; justify-content:space-around; background:#fff; border-radius:20px; padding:20px 10px; margin-top:20px; box-shadow: 0 6px 20px rgba(0,0,0,0.03); max-width:400px; margin-left:auto; margin-right:auto;}
+        .m-act-item { display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;}
+        .m-act-item svg { width:24px; fill:none; stroke:#555; stroke-width:2; }
+        .m-act-item span { font-size:12px; color:#555; font-weight:600;}
+
         /* 形状选择器 */
         .shape-nav { display:flex; gap:15px; overflow-x:auto; padding:10px 5px; scrollbar-width:none; -webkit-overflow-scrolling:touch;}
         .shape-nav::-webkit-scrollbar { display:none; }
@@ -380,18 +417,29 @@
         /* 心声弹窗内文字滚动框 */
         .mind-scroll-box { max-height:120px; overflow-y:auto; padding-right:5px; font-size:13px; color:#555; line-height:1.6; text-align:left; word-wrap:break-word; -webkit-overflow-scrolling: touch;}
 
-        /* 鱼册编辑的填空样式 - 优化滚动 */
+        /* 鱼册编辑的填空样式 */
         .yc-line { border-bottom: 1px solid #ccc; min-width: 40px; flex: 1; display: inline-flex; align-items: flex-end; padding: 0 4px; color: #333; font-weight: 500; cursor: pointer; text-align: left; max-height: 80px; overflow-y: auto; word-break: break-all; vertical-align: bottom; line-height: 1.4; -webkit-overflow-scrolling: touch; pointer-events: auto;}
         .yc-line-block { border-bottom: 1px solid #ccc; width: 100%; min-height: 24px; max-height: 150px; overflow-y: auto; color: #333; font-weight: 500; cursor: pointer; text-align: left; margin-top: 5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; padding-bottom: 2px; -webkit-overflow-scrolling: touch; pointer-events: auto;}
         
         /* 全局美化滚动条 */
-        .yc-line::-webkit-scrollbar, .yc-line-block::-webkit-scrollbar, .mind-scroll-box::-webkit-scrollbar { width: 2px; }
-        .yc-line::-webkit-scrollbar-thumb, .yc-line-block::-webkit-scrollbar-thumb, .mind-scroll-box::-webkit-scrollbar-thumb { background: transparent; }
+        .yc-line::-webkit-scrollbar, .yc-line-block::-webkit-scrollbar, .mind-scroll-box::-webkit-scrollbar, .api-page::-webkit-scrollbar { width: 2px; }
+        .yc-line::-webkit-scrollbar-thumb, .yc-line-block::-webkit-scrollbar-thumb, .mind-scroll-box::-webkit-scrollbar-thumb, .api-page::-webkit-scrollbar-thumb { background: transparent; }
     </style>
+    <style id="yuxin-custom-css"></style>
+    <style id="bubble-custom-css"></style>
+    <style id="island-custom-css"></style>
+    <style id="chat-custom-css"></style>
 </head>
 <body>
 
     <div id="phone">
+        <!-- 灵动岛 -->
+        <div id="dynamic-island">
+            <img id="di-ava">
+            <div id="di-text">个性签名</div>
+            <svg id="di-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+
         <div id="top-trigger"></div>
 
         <div class="status-bar">
@@ -455,19 +503,19 @@
 ⢣⡀⠀⠉⠲⢤⣀⠀⠀⠀⢀⣀⡤⠖⠉⠀⢀⡜
 ⢸⡉⠒⠄⠀⠀⠀⢉⡙⢢⡔⢋⡉⠀⠀⠠⠒⢉⡇
 ⠀⠉⢖⠒⠀⠀⠀⣇⠀⣸⠀⣇⠀⠀⠀⠒⡲⠉⠀
-⠀⠀⠀⠉⠙⠫⠤⠚⠉⠀⠀⠉⠓⠤⠝⠋⠉⠀</div><div class="box-bottom-right edit-text" id="t5">甜</div>
+⠀⠀⠀⠉⠙⠫⠤⠚⠉⠀⠀⠉⠓⠤⠝⠋⠉⠀</div><div class="box-bottom-right edit-text" id="t5">鱼</div>
                         </div>
                     </div>
-                    <div class="item app" data-name="鱼钟">
+                    <div class="item app" data-name="鱼钟" data-orig-name="鱼钟">
                         <div class="app-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M17.5 5.5l2 2M6.5 5.5l-2 2"/></svg></div><div class="app-label">鱼钟</div>
                     </div>
-                    <div class="item app" data-name="鱼乐">
+                    <div class="item app" data-name="鱼乐" data-orig-name="鱼乐">
                         <div class="app-icon"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="6"/><path d="M6 12h4M8 10v4"/><circle cx="15" cy="13" r="1.5" fill="currentColor" stroke="none"/><circle cx="17" cy="11" r="1.5" fill="currentColor" stroke="none"/></svg></div><div class="app-label">鱼乐</div>
                     </div>
-                    <div class="item app" data-name="线下">
+                    <div class="item app" data-name="线下" data-orig-name="线下">
                         <div class="app-icon"><svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2C20 17.5 12 22 12 22z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="app-label">线下</div>
                     </div>
-                    <div class="item app" data-name="日历">
+                    <div class="item app" data-name="日历" data-orig-name="日历">
                         <div class="app-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="4"/><path d="M8 3v4M16 3v4M3 11h18"/><path d="M11 15h2"/></svg></div><div class="app-label">日历</div>
                     </div>
                     <div class="item empty-slot"></div><div class="item empty-slot"></div><div class="item empty-slot"></div><div class="item empty-slot"></div><div class="item empty-slot"></div><div class="item empty-slot"></div><div class="item empty-slot"></div><div class="item empty-slot"></div>
@@ -482,26 +530,26 @@
 
         <div id="dock">
             <div class="dock-list" id="dock-list">
-                <div class="item app" data-name="鱼信">
+                <div class="item app" data-name="鱼信" data-orig-name="鱼信">
                     <div class="app-icon"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-12.7 8.38 8.38 0 0 1 3.9 1L21 3z"/><path d="M9 11h.01M15 11h.01"/><path d="M10 15c1 1 3 1 4 0"/></svg></div>
                     <div class="app-label">鱼信</div>
                 </div>
-                <div class="item app" data-name="API">
+                <div class="item app" data-name="API" data-orig-name="API">
                     <div class="app-icon"><svg viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9Z"/><path d="M11.5 13c1 1 2 1 3 0"/></svg></div>
                     <div class="app-label">API</div>
                 </div>
-                <div class="item app" data-name="鱼册">
+                <div class="item app" data-name="鱼册" data-orig-name="鱼册">
                     <div class="app-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="4"/><circle cx="8.5" cy="9.5" r="2.5"/><path d="M21 15l-5-5-3 3-4-4-6 6"/></svg></div>
                     <div class="app-label">鱼册</div>
                 </div>
-                <div class="item app" data-name="设置">
+                <div class="item app" data-name="设置" data-orig-name="设置">
                     <div class="app-icon"><svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
                     <div class="app-label">设置</div>
                 </div>
             </div>
         </div>
 
-        <div id="grid-menu" onclick="this.style.display='none'"><div class="g-menu"><div class="g-cell" onclick="jump(0)">1</div><div class="g-cell" onclick="jump(1)">2</div><div class="g-cell" onclick="jump(2)">3</div><div class="g-cell" onclick="jump(3)">4</div></div></div>
+        <div id="grid-menu" onclick="if(event.target===this) this.style.display='none'"><div class="g-menu"><div class="g-cell" onclick="jump(0)">1</div><div class="g-cell" onclick="jump(1)">2</div><div class="g-cell" onclick="jump(2)">3</div><div class="g-cell" onclick="jump(3)">4</div></div></div>
         
         <!-- 全局悬浮球 -->
         <div id="assist-touch"><div class="touch-inner"></div></div>
@@ -557,8 +605,11 @@
                     </div>
                 </div>
                 <div class="yx-s-card">
-                    <div class="yx-s-row" onclick="openDevFeature('外观设置')"><div class="yx-s-label">外观设置</div><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                    <div class="yx-s-row" onclick="openAppearanceSettings()"><div class="yx-s-label">外观与主题设置</div><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
                     <div class="yx-s-row" onclick="openDevFeature('状态栏设置')"><div class="yx-s-label">状态栏设置</div><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                </div>
+                <div class="yx-s-card" style="margin-bottom:15px;" onclick="openFullscreenSettings()">
+                    <div class="yx-s-row"><div class="yx-s-label">全屏与灵动岛设置</div><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
                 </div>
                 <div class="yx-s-card" style="margin-bottom:15px;" onclick="exportBackup()">
                     <div class="yx-s-row" style="justify-content:center;"><div class="yx-s-label" style="color:var(--blue); font-weight:bold;">导出备份数据</div></div>
@@ -569,6 +620,152 @@
             </div>
             <input type="file" id="sys-ava-up" style="display:none" onchange="loadSysAva(event)">
             <input type="file" id="import-file" style="display:none" accept=".json" onchange="importBackup(event)">
+        </div>
+
+        <!-- ================= 🚀 外观与主题设置 独立框架 ================= -->
+        <div id="appearance-settings-view" class="ios-fullscreen" style="display:none; z-index:1800;">
+            <div class="yx-header" style="background:#fff; border-bottom:1px solid #f2f2f7;">
+                <div class="yx-icon-btn" onclick="document.getElementById('appearance-settings-view').style.display='none'"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
+                <span class="yx-title">外观与主题设置</span>
+                <div style="width:34px"></div>
+            </div>
+            <div style="padding:20px; overflow-y:auto; flex:1;">
+                <div style="font-size:13px; color:#888; margin-bottom:10px; font-weight:bold;">桌面图标设置 (左右滑动, 点击图标换图)</div>
+                <div class="yx-s-card" style="padding:15px;" id="app-icon-list">
+                    <!-- JS 渲染，现已支持滑动 -->
+                </div>
+
+                <div style="font-size:13px; color:#888; margin-bottom:10px; font-weight:bold; margin-top:20px;">鱼信全局主题设置</div>
+                <div class="yx-s-card">
+                    <div class="yx-s-row" onclick="editYuxinCss()">
+                        <div class="yx-s-label">全局自定义CSS</div>
+                        <div class="yx-s-val"><span style="font-size:12px;color:#888;">设置</span><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                    </div>
+                </div>
+
+                <div style="font-size:13px; color:#888; margin-bottom:10px; font-weight:bold; margin-top:20px;">鱼信气泡设置</div>
+                
+                <!-- 气泡预览 -->
+                <div id="bubble-preview" style="padding: 15px; background: #fdfdfd; border-radius: 16px; margin-bottom: 15px; border:1px solid #eee;">
+                    <div class="yx-chat-bubble left" style="display:inline-block; margin-bottom:10px;">对方的回复预览</div><br>
+                    <div style="text-align:right;"><div class="yx-chat-bubble right" style="display:inline-block;">我的发送预览</div></div>
+                </div>
+
+                <div class="yx-s-card" style="padding:15px; display:flex; flex-direction:column; gap:15px;" id="bubble-settings-form">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:14px; color:#333;">我方气泡背景色</span>
+                        <input type="color" id="b-my-bg" onchange="updateBubbleStyles()" style="border:none; padding:0; width:30px; height:30px; cursor:pointer;">
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:14px; color:#333;">我方气泡文字色</span>
+                        <input type="color" id="b-my-color" onchange="updateBubbleStyles()" style="border:none; padding:0; width:30px; height:30px; cursor:pointer;">
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #eee; padding-top:10px;">
+                        <span style="font-size:14px; color:#333;">对方气泡背景色</span>
+                        <input type="color" id="b-their-bg" onchange="updateBubbleStyles()" style="border:none; padding:0; width:30px; height:30px; cursor:pointer;">
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:14px; color:#333;">对方气泡文字色</span>
+                        <input type="color" id="b-their-color" onchange="updateBubbleStyles()" style="border:none; padding:0; width:30px; height:30px; cursor:pointer;">
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px; border-top:1px solid #eee; padding-top:10px;">
+                        <span style="font-size:12px; width:60px; color:#555;">阴影大小</span>
+                        <input type="range" id="b-shadow" min="0" max="20" value="2" style="flex:1;" oninput="updateBubbleStyles()">
+                        <span id="bv-shadow" style="font-size:12px; width:20px; text-align:right;">2</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:12px; width:60px; color:#555;">左上圆角</span>
+                        <input type="range" id="b-r1" min="0" max="30" value="18" style="flex:1;" oninput="updateBubbleStyles()">
+                        <span id="bv-r1" style="font-size:12px; width:20px; text-align:right;">18</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:12px; width:60px; color:#555;">右上圆角</span>
+                        <input type="range" id="b-r2" min="0" max="30" value="18" style="flex:1;" oninput="updateBubbleStyles()">
+                        <span id="bv-r2" style="font-size:12px; width:20px; text-align:right;">18</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:12px; width:60px; color:#555;">右下圆角</span>
+                        <input type="range" id="b-r3" min="0" max="30" value="18" style="flex:1;" oninput="updateBubbleStyles()">
+                        <span id="bv-r3" style="font-size:12px; width:20px; text-align:right;">18</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:12px; width:60px; color:#555;">左下圆角</span>
+                        <input type="range" id="b-r4" min="0" max="30" value="18" style="flex:1;" oninput="updateBubbleStyles()">
+                        <span id="bv-r4" style="font-size:12px; width:20px; text-align:right;">18</span>
+                    </div>
+                </div>
+
+                <div style="font-size:13px; color:#888; margin-bottom:10px; font-weight:bold; margin-top:20px;">聊天页面深度自定义 CSS</div>
+                <div class="yx-s-card">
+                    <div class="yx-s-row" onclick="editChatCss()">
+                        <div class="yx-s-label">聊天界面自定义CSS</div>
+                        <div class="yx-s-val"><span style="font-size:12px;color:#888;">设置主题</span><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="file" id="app-icon-up" style="display:none" accept="image/*" onchange="loadAppIconImg(event)">
+
+        <!-- ================= 🚀 全屏设置独立框架 ================= -->
+        <div id="fullscreen-settings-view" class="ios-fullscreen" style="display:none;">
+            <div class="yx-header" style="background:#fff; border-bottom:1px solid #f2f2f7;">
+                <div class="yx-icon-btn" onclick="document.getElementById('fullscreen-settings-view').style.display='none'"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
+                <span class="yx-title">全屏与灵动岛设置</span>
+                <div style="width:34px"></div>
+            </div>
+            <div style="padding:20px; overflow-y:auto; flex:1;">
+                <div class="yx-s-card">
+                    <div class="yx-s-row" onclick="toggleGlobalSetting(event, 'fullScreen')">
+                        <div class="yx-s-label">全屏显示 (去除手机外壳)</div><div class="ios-sw" id="sw-fullScreen"></div>
+                    </div>
+                </div>
+                <div class="yx-s-card">
+                    <div class="yx-s-row" onclick="changeGlobalColor('phoneFrame')">
+                        <div class="yx-s-label">手机外框颜色</div>
+                        <div class="yx-s-val"><div class="color-block" id="cb-phoneFrame" style="background:#1a1a1a;"></div><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                    </div>
+                </div>
+                <div class="yx-s-card">
+                    <div class="yx-s-row" onclick="toggleGlobalSetting(event, 'islandEnabled')">
+                        <div class="yx-s-label">开启灵动岛</div><div class="ios-sw" id="sw-islandEnabled"></div>
+                    </div>
+                    <div class="yx-s-row" onclick="changeGlobalColor('islandBg')">
+                        <div class="yx-s-label">灵动岛背景颜色</div>
+                        <div class="yx-s-val"><div class="color-block" id="cb-islandBg" style="background:#000000;"></div><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                    </div>
+                    <div class="yx-s-row" onclick="changeGlobalColor('islandTextColor')">
+                        <div class="yx-s-label">灵动岛文字颜色</div>
+                        <div class="yx-s-val"><div class="color-block" id="cb-islandTextColor" style="background:#ffffff;"></div><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                    </div>
+                    <div class="yx-s-row" onclick="editIslandText()">
+                        <div class="yx-s-label">灵动岛文字</div>
+                        <div class="yx-s-val"><span id="is-v-text" style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                    </div>
+                    <div class="yx-s-row" onclick="document.getElementById('island-status-up').click()">
+                        <div class="yx-s-label">灵动岛状态(播放图标)</div>
+                        <div class="yx-s-val"><span style="font-size:12px;color:#888;">点击上传透明底图</span></div>
+                    </div>
+                </div>
+                <div class="yx-s-card">
+                    <div class="yx-s-row" onclick="editIslandCss()">
+                        <div class="yx-s-label">自定义灵动岛CSS</div>
+                        <div class="yx-s-val"><span style="font-size:12px;color:#888;">设置</span><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                    </div>
+                </div>
+            </div>
+            <input type="file" id="island-status-up" style="display:none" accept="image/*" onchange="loadIslandStatusImg(event)">
+        </div>
+
+        <!-- ================= 🚀 群聊与单聊消息设置 独立框架 ================= -->
+        <div id="msg-settings-view" class="ios-fullscreen" style="display:none; z-index:1900;">
+            <div class="yx-header" style="background:#fff; border-bottom:1px solid #f2f2f7;">
+                <div class="yx-icon-btn" onclick="document.getElementById('msg-settings-view').style.display='none'"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
+                <span class="yx-title">消息设置</span>
+                <div style="width:34px"></div>
+            </div>
+            <div style="padding:20px; overflow-y:auto; flex:1;" id="msg-settings-content">
+                <!-- 内容由 JS 动态渲染 -->
+            </div>
         </div>
 
         <!-- ================= 🚀 恢复好友中心 ================= -->
@@ -624,7 +821,7 @@
                 </div>
             </div>
             <div style="flex:1; overflow-y:auto; padding:20px; -webkit-overflow-scrolling:touch; position:relative;">
-                <div id="yuce-list-box"></div>
+                <div id="yuce-list-box" style="padding-bottom: 90px;"></div>
             </div>
             <!-- 悬浮添加按钮 -->
             <div style="position:absolute; bottom:30px; right:30px; width:50px; height:50px; background:var(--blue); border-radius:50%; display:flex; justify-content:center; align-items:center; color:#fff; font-size:28px; box-shadow:0 6px 15px rgba(91,157,255,0.4); cursor:pointer;" onclick="openYuceEdit('')">+</div>
@@ -637,14 +834,15 @@
                 <div style="color:var(--blue); font-weight:bold; font-size:14px; cursor:pointer;" onclick="showModal('提示','已自动保存', ()=>{ document.getElementById('yuce-edit-view').style.display='none'; renderYuceList(); }, 'alert')">保存</div>
             </div>
             <div style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; align-items:center;">
-                <div style="width:80px; height:80px; border-radius:20px; background:#e0f0ff; overflow:hidden; margin-bottom:10px; display:flex; justify-content:center; align-items:center; cursor:pointer;" onclick="document.getElementById('yc-ava-up').click()">
+                <!-- 头像改为圆角正方形 -->
+                <div style="width:80px; height:80px; border-radius:12px; background:#e0f0ff; overflow:hidden; margin-bottom:10px; display:flex; justify-content:center; align-items:center; cursor:pointer;" onclick="document.getElementById('yc-ava-up').click()">
                     <img id="yc-e-img" style="width:100%; height:100%; object-fit:cover; display:none;">
                     <svg viewBox="0 0 24 24" style="width:30px; fill:#ccc;" id="yc-e-def"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
                 </div>
                 <div id="yc-e-name" style="font-size:18px; font-weight:bold; color:#333; margin-bottom:5px;">新人物</div>
                 <div style="font-size:11px; color:#aaa; margin-bottom:20px;" id="yc-e-date">2024-10-01</div>
 
-                <div class="yx-s-card" style="width:100%; padding:20px; display:flex; flex-direction:column; gap:15px; font-size:14px; color:#555; align-items:flex-start;">
+                <div class="yx-s-card" style="width:100%; padding:20px; display:flex; flex-direction:column; gap:15px; font-size:14px; color:#555; align-items:flex-start; overflow-y:auto;">
                     <div style="width:100%; display:flex; align-items:flex-end;">姓名：<span class="yc-line" id="ycf-name" onclick="editYcField('name','姓名')"></span></div>
                     <div style="width:100%; display:flex; align-items:flex-end;">别名：<span class="yc-line" id="ycf-alias" onclick="editYcField('alias','别名')"></span></div>
                     <div style="width:100%; display:flex; align-items:flex-end;">性别：<span class="yc-line" id="ycf-gender" onclick="editYcField('gender','性别')"></span></div>
@@ -656,6 +854,8 @@
                     <div style="width:100%; display:flex; align-items:flex-end;">三围/长度：<span class="yc-line" id="ycf-size" onclick="editYcField('size','三围/长度')"></span></div>
                     <div style="width:100%; display:flex; align-items:flex-end;">鱼信ID：<span class="yc-line" id="ycf-yuxinId" onclick="editYcField('yuxinId','鱼信ID')"></span></div>
                     <div style="width:100%; display:flex; align-items:flex-end;">电话号码：<span class="yc-line" id="ycf-phone" onclick="editYcField('phone','电话号码')"></span></div>
+                    <!-- 新增开场白 -->
+                    <div style="width:100%; display:flex; flex-direction:column;">加好友开场白：<div class="yc-line-block" id="ycf-greeting" onclick="editYcField('greeting','加好友开场白')"></div></div>
                 </div>
             </div>
             <input type="file" id="yc-ava-up" style="display:none" onchange="loadYuceImg(event)">
@@ -698,6 +898,7 @@
                 <div class="yx-stamp-wrapper">
                     <div class="yx-stamp-part yx-stamp-left">
                         <div class="yx-stamp-sig edit-text" id="yx-sig-name">小鱼鱼鱼</div>
+                        <!-- 这里的头像也绑定系统头像 -->
                         <div class="yx-stamp-avatar" onclick="document.getElementById('yx-file-up').click()"><svg id="yx-def-avatar" viewBox="0 0 24 24"><path d="M2 12c2.5-3 6.5-4 10-2l6-4v12l-6-4c-3.5 2-7.5 1-10-2z"/></svg><img id="yx-avatar" style="display:none;"></div>
                         <div class="yx-stamp-date" id="yx-stamp-date">2024.10.01</div>
                         <div class="yx-stamp-snow"><div class="sf sf1"></div><div class="sf sf2"></div><div class="sf sf3"></div><div class="sf sf4"></div><div class="sf sf5"></div></div>
@@ -744,31 +945,42 @@
                 <div class="yx-header"><div class="yx-title" style="padding-left:10px;">我的</div></div>
                 <div style="padding: 10px 20px;">
                     
-                    <!-- 🌟 核心定制个人卡片 (完美修正遮罩) -->
+                    <!-- 🌟 核心定制个人卡片 -->
                     <div class="my-main-card">
-                        <div class="my-small-card">
-                            <div class="my-yuxin-text">YuXin</div>
-                            <div class="my-cutout">
-                                <div class="my-ava-base" onclick="document.getElementById('my-ava-up').click()">
-                                    <svg id="my-ava-def" viewBox="0 0 24 24" style="width:20px; fill:#ccc;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
-                                    <img id="my-ava-real" style="display:none; width:100%; height:100%; object-fit:cover;">
-                                </div>
-                                <img id="my-frame-preview-main" class="my-ava-frame" style="display:none;">
-                            </div>
-                        </div>
                         
+                        <!-- 居中完美半圆凹槽 -->
+                        <div class="my-small-card"></div>
+                        
+                        <!-- 居中纯圆头像 (移动到凹槽上方) -->
+                        <div class="my-ava-base" onclick="document.getElementById('my-ava-up').click()">
+                            <svg id="my-ava-def" viewBox="0 0 24 24" style="width:20px; fill:#ccc;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+                            <img id="my-ava-real" style="display:none;">
+                        </div>
+                        <img id="my-frame-preview-main" class="my-ava-frame" style="display:none;">
+                        
+                        <!-- 虚线连接 -->
+                        <svg style="position:absolute; top:30px; left:50%; width:80px; height:40px; transform:translateX(-50%); pointer-events:none; z-index:4;">
+                            <path d="M 40 0 Q 30 20 10 30" fill="none" stroke="#ccc" stroke-width="1" stroke-dasharray="2,3"/>
+                        </svg>
+
+                        <div class="my-yuxin-text">YuXin</div>
+                        
+                        <!-- 左侧装饰与拍立得 -->
                         <div class="my-decor-area">
+                            <div class="my-polaroid" onclick="document.getElementById('my-ava-up').click()">
+                                <div class="p-tape"></div>
+                                <div class="p-inner"><img id="my-polaroid-img" style="display:none; width:100%; height:100%; object-fit:cover;"></div>
+                                <div class="my-emoticon edit-text" id="my-emoticon" style="font-size:10px; color:#555; margin-top:2px; font-weight:bold; cursor:pointer;">^⎚˕⎚^</div>
+                            </div>
                             <svg class="my-fish-svg" viewBox="0 0 40 30" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M5,15 Q15,0 35,5 Q35,15 35,25 Q15,30 5,15 Z"/>
-                                <circle cx="28" cy="12" r="3" fill="#fff"/>
+                                <circle cx="28" cy="12" r="3" fill="var(--pink)"/>
                                 <circle cx="29" cy="12" r="1.5" fill="#333"/>
-                                <path d="M12,12 Q15,10 18,12" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                <path d="M12,12 Q15,10 18,12" stroke="var(--pink)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
                             </svg>
                             <div class="my-rhombus"></div>
                         </div>
                         
-                        <svg class="my-dash-line" viewBox="0 0 40 25"><path d="M0,20 Q20,30 38,5"/></svg>
-
                         <div class="my-status-dot" id="my-status-dot" onclick="changeMyDotColor()"></div>
                         <div class="my-status-badge" id="my-status-badge" onclick="changeMyStatus()">在线</div>
                         
@@ -780,6 +992,13 @@
                     
                     <div class="yx-s-card" style="margin-top:20px;">
                         <div class="yx-s-row" onclick="openBottomSheet('yx-frame-sheet')"><div class="yx-s-label">头像框遮罩设置</div><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                    </div>
+
+                    <!-- 功能矩形 -->
+                    <div class="my-action-menu">
+                        <div class="m-act-item" onclick="openMyActionView('钱包')"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M21 12H17"/><path d="M17 12A2 2 0 0 0 17 12"/></svg><span>钱包</span></div>
+                        <div class="m-act-item" onclick="openMyActionView('收藏')"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>收藏</span></div>
+                        <div class="m-act-item" onclick="openMyActionView('设置')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>设置</span></div>
                     </div>
                 </div>
             </div>
@@ -794,14 +1013,23 @@
             </div>
         </div>
 
+        <!-- ================= 🚀 我的页面下方功能独立框架 ================= -->
+        <div id="my-action-view" class="ios-fullscreen" style="display:none;">
+            <div class="yx-header" style="background:#fff; border-bottom:1px solid #f2f2f7;">
+                <div class="yx-icon-btn" onclick="document.getElementById('my-action-view').style.display='none'"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
+                <span class="yx-title" id="my-action-title">功能</span>
+                <div style="width:34px"></div>
+            </div>
+            <div class="yx-empty-state"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>此模块待开发...</span></div>
+        </div>
+
         <!-- 🚀 聊天视图容器 🚀 -->
         <div id="chat-view">
-            <div class="yx-header" style="background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; z-index:10;">
+            <div class="yx-header" style="background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding-bottom: 15px; z-index:10; border-bottom:none;">
                 <div class="yx-icon-btn" onclick="closeChat()">
                     <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" stroke-width="2.5"/></svg>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <!-- 点击顶部头像弹出好友专属超级抽屉 -->
                     <div id="chat-avatar-box" onclick="handleChatAvatarClick()" style="position:relative; width:34px; height:34px; cursor:pointer;">
                         <div id="chat-avatar-inner" style="width:100%;height:100%;background:#e0e0e0;overflow:hidden;"><img style="width:100%;height:100%;display:none;object-fit:cover;"></div>
                         <img id="chat-avatar-frame" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); pointer-events:none; display:none;">
@@ -820,43 +1048,81 @@
                 </div>
             </div>
             
+            <div id="group-announce-banner" class="group-announce-banner" style="display:none;" onclick="openGroupAnnounceView()">
+                <div style="display:flex; align-items:center; gap:5px; flex:1; overflow:hidden;">
+                    <svg viewBox="0 0 24 24" style="width:16px; fill:none; stroke:currentColor; stroke-width:2;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <span id="group-announce-text" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">群公告</span>
+                </div>
+                <svg viewBox="0 0 24 24" style="width:16px; stroke:currentColor; fill:none;"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+
             <div id="yx-chat-scroll" style="flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; -webkit-overflow-scrolling: touch; position:relative;">
                 <!-- 聊天气泡挂载区 -->
             </div>
             
-            <!-- 聊天悬浮菜单 -->
             <div id="chat-menu" class="chat-menu">
-                <div class="c-m-item" onclick="showModal('提示','已复制',null,'alert'); document.getElementById('chat-menu').style.display='none'">复制</div>
-                <div class="c-m-item" onclick="showModal('提示','已转发',null,'alert'); document.getElementById('chat-menu').style.display='none'">转发</div>
-                <div class="c-m-item" onclick="deleteChatBubble(); document.getElementById('chat-menu').style.display='none'">删除</div>
+                <div class="c-m-item" onclick="cAction('copy')">复制</div>
+                <div class="c-m-item" onclick="cAction('forward')">转发</div>
+                <div class="c-m-item" onclick="cAction('quote')">引用</div>
+                <div class="c-m-item" onclick="cAction('edit')">编辑</div>
+                <div class="c-m-item" onclick="cAction('translate')">翻译</div>
+                <div class="c-m-item" onclick="cAction('multi')">多选</div>
+                <div class="c-m-item" onclick="cAction('delete')" style="color:#ff3b30; font-weight:bold;">删除</div>
             </div>
             
-            <div style="background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-top:1px solid rgba(0,0,0,0.05); display:flex; flex-direction:column; z-index:10;">
+            <div style="background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-top:1px solid rgba(0,0,0,0.05); display:flex; flex-direction:column; z-index:10; width:100%; box-sizing:border-box;">
                 <div id="temp-chat-bar" style="display:none; padding:10px 15px; border-bottom:1px solid rgba(0,0,0,0.05); justify-content:space-between; gap:10px;">
                     <div class="api-btn" style="flex:1; background:#f4f4f7; color:#ff3b30; margin:0;" onclick="tempAction('black')">拉入黑名单</div>
                     <div class="api-btn" style="flex:1; background:var(--blue); color:#fff; margin:0;" onclick="tempAction('add')">加为好友</div>
                 </div>
                 
-                <div id="chat-input-area" style="height:60px; display:flex; align-items:center; padding:0 15px; gap:10px;">
+                <!-- 🌟 全新聊天输入框区域 🌟 -->
+                <div id="chat-input-area" style="height:60px; display:flex; align-items:center; padding:0 10px; gap:8px; box-sizing:border-box;">
+                    <!-- 加号与发送按钮移至左侧外侧 -->
                     <div onclick="toggleChatPlus()" style="width:34px; height:34px; border-radius:50%; border:1px solid #ccc; display:flex; justify-content:center; align-items:center; cursor:pointer; flex-shrink:0;">
                         <svg viewBox="0 0 24 24" style="width:20px; stroke:#666; fill:none; stroke-width:1.5;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                     </div>
-                    <input id="chat-ipt" type="text" style="flex:1; height:36px; background:rgba(0,0,0,0.05); border-radius:18px; padding:0 15px; color:#333; font-size:14px; border:none; outline:none;" placeholder="发送消息..." onkeypress="if(event.key==='Enter') handleSendMsg()">
-                    <div onclick="handleSendMsg()" style="width:34px; height:34px; background:var(--blue); border-radius:50%; display:flex; justify-content:center; align-items:center; cursor:pointer; flex-shrink:0;">
-                        <svg viewBox="0 0 24 24" style="width:16px; stroke:#fff; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round;"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                    <div onclick="handleSendMsg()" style="width:34px; height:34px; border-radius:50%; background:var(--blue); display:flex; justify-content:center; align-items:center; cursor:pointer; flex-shrink:0; box-shadow:0 2px 5px rgba(91,157,255,0.4);">
+                        <svg viewBox="0 0 24 24" style="width:16px; stroke:#fff; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                    </div>
+                    
+                    <div style="flex:1; position:relative; display:flex; align-items:center; height:36px;">
+                        <!-- 左侧麦克风图标 -->
+                        <div onclick="openVoiceModal()" style="position:absolute; left:8px; display:flex; align-items:center; cursor:pointer;">
+                            <svg viewBox="0 0 24 24" style="width:18px; stroke:#888; fill:none; stroke-width:2;"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+                        </div>
+                        <input id="chat-ipt" type="text" style="width:100%; height:100%; background:rgba(0,0,0,0.05); border-radius:18px; padding:0 35px; color:#333; font-size:14px; border:none; outline:none; box-sizing:border-box;" placeholder="发送消息..." onkeypress="if(event.key==='Enter') handleSendMsg()">
+                        <!-- 右侧重roll (录视频图标) -->
+                        <div id="chat-reroll-btn" onclick="handleReRoll()" style="position:absolute; right:8px; display:flex; align-items:center; cursor:pointer;">
+                            <svg viewBox="0 0 24 24" style="width:18px; stroke:#888; fill:none; stroke-width:2;"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                        </div>
                     </div>
                 </div>
-                <!-- 黑名单提示 -->
+
                 <div id="chat-blocked-area" style="height:60px; display:none; justify-content:center; align-items:center; color:#888; font-size:13px; background:rgba(0,0,0,0.02);">当前无法完成对话</div>
                 
-                <!-- +号展开面板 -->
                 <div id="chat-plus-panel" class="chat-plus-panel">
-                    <div onclick="showModal('照片','',null,'alert','暂不支持发送照片')"><div class="cp-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><div class="cp-text">照片</div></div>
-                    <div onclick="showModal('拍摄','',null,'alert','暂不支持拍摄')"><div class="cp-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="cp-text">拍摄</div></div>
-                    <div onclick="showModal('位置','',null,'alert','暂不支持发送位置')"><div class="cp-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="cp-text">位置</div></div>
-                    <div onclick="showModal('文件','',null,'alert','暂不支持发送文件')"><div class="cp-icon"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div><div class="cp-text">文件</div></div>
+                    <div onclick="document.getElementById('chat-img-up').click()"><div class="cp-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><div class="cp-text">照片</div></div>
+                    <div onclick="document.getElementById('chat-camera-up').click()"><div class="cp-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="cp-text">拍摄</div></div>
+                    <div onclick="openLocationModal()"><div class="cp-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="cp-text">位置</div></div>
+                    <div onclick="document.getElementById('chat-file-up').click()"><div class="cp-icon"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div><div class="cp-text">文件</div></div>
                 </div>
             </div>
+        </div>
+        
+        <!-- 文件上传占位 -->
+        <input type="file" id="chat-img-up" onchange="sendChatImage(event)" accept="image/*" style="display:none">
+        <input type="file" id="chat-camera-up" onchange="sendChatImage(event)" accept="image/*" capture="environment" style="display:none">
+        <input type="file" id="chat-file-up" onchange="sendChatFile(event)" style="display:none">
+
+        <!-- ================= 🚀 群公告独立框架 ================= -->
+        <div id="group-announce-view" class="ios-fullscreen" style="display:none; z-index:1950 !important;">
+            <div class="yx-header" style="background:#fff; border-bottom:1px solid #f2f2f7;">
+                <div class="yx-icon-btn" onclick="document.getElementById('group-announce-view').style.display='none'"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
+                <span class="yx-title">群公告</span>
+                <div style="color:var(--blue); font-weight:bold; font-size:14px; cursor:pointer;" id="btn-add-announce" onclick="addNewAnnounce()">添加</div>
+            </div>
+            <div style="flex:1; overflow-y:auto; padding:20px; background:#f4f4f7;" id="announce-list-container"></div>
         </div>
 
         <!-- --- 底层卡片遮罩与内容 --- -->
@@ -867,17 +1133,14 @@
             <div class="bs-handle" onclick="closeBottomSheet('yx-frame-sheet')"></div>
             <div class="yx-title" style="text-align:center; padding:10px 0;">头像框遮罩设置</div>
             <div class="bs-content" style="padding-top:10px;">
-                <!-- 预览区 -->
-                <div style="width: 120px; height: 120px; border-radius: 30px; background:#e5e5ea; margin: 0 auto 20px; position:relative; display:flex; justify-content:center; align-items:center; overflow:hidden; box-shadow:0 10px 20px rgba(0,0,0,0.05);" onclick="document.getElementById('my-frame-up').click()">
+                <div style="width: 120px; height: 120px; border-radius: 50%; background:#e5e5ea; margin: 0 auto 20px; position:relative; display:flex; justify-content:center; align-items:center; overflow:hidden; box-shadow:0 10px 20px rgba(0,0,0,0.05);" onclick="document.getElementById('my-frame-up').click()">
                     <img id="sheet-ava-real" style="width:100%; height:100%; object-fit:cover; display:none;">
                     <svg id="sheet-ava-def" viewBox="0 0 24 24" style="width:50px; fill:#ccc;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
-                    <!-- 框体图片 -->
                     <img id="sheet-frame-preview" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); pointer-events:none; display:none;">
                 </div>
                 <div style="text-align:center; font-size:12px; color:#888; margin-bottom:20px;">点击上方导入透明底图</div>
                 <input type="file" id="my-frame-up" accept="image/*" style="display:none" onchange="loadMyFrame(event)">
                 
-                <!-- 滑块控制区 -->
                 <div style="display:flex; flex-direction:column; gap:15px; padding:0 10px;">
                     <div style="display:flex; align-items:center; gap:10px;">
                         <span style="font-size:12px; width:40px; color:#555;">大小</span>
@@ -904,7 +1167,6 @@
             <div class="yx-title" style="text-align:center; padding:10px 0;">TA 的状态与专属外观</div>
             <div class="bs-content" style="padding-top:10px;">
                 
-                <!-- 1. 心声模块 -->
                 <div class="yx-s-card" style="padding:15px; display:flex; flex-direction:column; gap:8px;">
                     <div style="font-size:14px; font-weight:bold; color:var(--blue); margin-bottom:5px;">心声读取... <span style="font-size:10px; color:#aaa; font-weight:normal;">心率 <span id="mind-bpm" style="color:#ff3b30;font-weight:bold;">80</span> bpm</span></div>
                     <div class="mind-scroll-box">
@@ -913,7 +1175,6 @@
                     </div>
                 </div>
                 
-                <!-- 2. 色色想法模块 -->
                 <div class="yx-s-card" style="padding:15px; display:flex; flex-direction:column; gap:8px;">
                     <div style="font-size:14px; font-weight:bold; color:#ffb067; margin-bottom:5px;">深度状态... <span style="font-size:10px; color:#aaa; font-weight:normal;">瑟瑟值 <span id="mind-color" style="color:#ffb067;font-weight:bold;">50</span>%</span></div>
                     <div class="mind-scroll-box">
@@ -923,16 +1184,12 @@
                     </div>
                 </div>
 
-                <!-- 3. 头像形状与圆角模块 -->
                 <div class="yx-s-card" style="padding:15px 0 15px 15px;">
                     <div style="font-size:14px; font-weight:bold; color:#333; margin-bottom:10px;">头像形状选择</div>
                     <div class="shape-nav" id="shape-nav">
+                        <!-- 只保留正方形和圆形 -->
                         <div class="shape-item active" data-shape="none" style="border-radius:0;"></div>
                         <div class="shape-item" data-shape="circle(50% at 50% 50%)" style="border-radius:50%;"></div>
-                        <div class="shape-item" data-shape="polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)" style="clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);"></div>
-                        <div class="shape-item" data-shape="polygon(50% 0%, 0% 100%, 100% 100%)" style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
-                        <div class="shape-item" data-shape="polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);"></div>
-                        <div class="shape-item" data-shape="polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" style="clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);"></div>
                         <div class="shape-item" id="btn-custom-shape" style="background:#5b9dff; display:flex; justify-content:center; align-items:center; color:#fff; font-size:20px; font-weight:300;">+</div>
                     </div>
                     
@@ -943,7 +1200,6 @@
                     </div>
                 </div>
 
-                <!-- 4. 好友专属头像遮罩模块 -->
                 <div class="yx-s-card" style="padding:15px;">
                     <div style="font-size:14px; font-weight:bold; color:#333; margin-bottom:15px; text-align:center;">专属气泡头像遮罩</div>
                     <div style="width: 100px; height: 100px; background:#e5e5ea; margin: 0 auto 15px; position:relative; display:flex; justify-content:center; align-items:center; overflow:hidden;" onclick="document.getElementById('mind-frame-up').click()">
@@ -1009,14 +1265,20 @@
         <!-- 群管理操作面板 -->
         <div id="yx-group-manage-sheet" class="bottom-sheet" style="height: 60%; z-index: 1803;">
             <div class="bs-handle" onclick="closeBottomSheet('yx-group-manage-sheet')"></div>
-            <div class="yx-header" style="padding: 10px 20px; border-bottom:1px solid #eee;"><span class="yx-title" style="margin:0 auto;">群管理</span></div>
+            <div class="yx-header" style="padding: 10px 20px; border-bottom:1px solid #eee;">
+                <div class="yx-icon-btn" onclick="closeBottomSheet('yx-group-manage-sheet'); openContactSettings();"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
+                <span class="yx-title" style="flex:1; text-align:center; padding-right:34px;">群管理</span>
+            </div>
             <div class="bs-content" id="yx-group-manage-content" style="padding-top:15px;"></div>
         </div>
 
         <!-- 踢人列表面板 -->
         <div id="yx-group-kick-sheet" class="bottom-sheet" style="height: 60%; z-index: 1803;">
             <div class="bs-handle" onclick="closeBottomSheet('yx-group-kick-sheet')"></div>
-            <div class="yx-header" style="padding: 10px 20px; border-bottom:1px solid #eee;"><span class="yx-title" style="margin:0 auto;">移出成员</span></div>
+            <div class="yx-header" style="padding: 10px 20px; border-bottom:1px solid #eee;">
+                <div class="yx-icon-btn" onclick="closeBottomSheet('yx-group-kick-sheet'); openContactSettings();"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg></div>
+                <span class="yx-title" style="flex:1; text-align:center; padding-right:34px;">移出成员</span>
+            </div>
             <div class="bs-content" style="padding-top:15px;">
                 <input type="text" id="kick-search-ipt" class="api-input" placeholder="搜索成员..." oninput="renderKickList()">
                 <div id="yx-group-kick-list"></div>
@@ -1038,7 +1300,7 @@
         <input type="file" id="mp3-file" style="display:none;" accept=".mp3" onchange="alert('提示音已设为: ' + (this.files[0] ? this.files[0].name : '默认'));">
 
         <!-- 统一弹窗 -->
-        <div id="modal">
+        <div id="modal" onclick="if(event.target===this) closeUniversalModal()">
             <div class="m-box">
                 <div style="font-weight:600; font-size:15px; color:#444" id="m-title">编辑内容</div>
                 <input id="m-input" style="display:none;">
@@ -1051,13 +1313,313 @@
                 </div>
             </div>
         </div>
+        
+        <!-- 语音模拟弹窗 -->
+        <div id="voice-modal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:4000; justify-content:center; align-items:center;" onclick="if(event.target===this)this.style.display='none'">
+            <div class="m-box" style="padding:20px;">
+                <div style="font-weight:bold; margin-bottom:15px;">发送语音</div>
+                <input id="v-sec" type="number" placeholder="语音秒数 (例如: 10)" class="api-input">
+                <textarea id="v-text" placeholder="语音识别出的文字内容..." class="api-input" style="height:80px;"></textarea>
+                <div style="display:flex; gap:10px;">
+                    <div class="api-btn" style="flex:1; background:#ccc;" onclick="document.getElementById('voice-modal').style.display='none'">取消</div>
+                    <div class="api-btn" style="flex:1;" onclick="sendVoiceMsg()">发送</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 位置发送弹窗 -->
+        <div id="loc-modal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:4000; justify-content:center; align-items:center;" onclick="if(event.target===this)this.style.display='none'">
+            <div class="m-box" style="padding:20px;">
+                <div style="font-weight:bold; margin-bottom:10px;">发送位置</div>
+                <div style="height:100px; margin-bottom:10px; border-radius:8px; overflow:hidden;">
+                    <!-- 真·模拟地图 SVG -->
+                    <svg viewBox="0 0 100 60" style="width:100%;height:100%;background:#eef1f5;">
+                        <path d="M0,30 Q50,40 100,20" stroke="#fff" stroke-width="6" fill="none"/><path d="M40,0 L60,100" stroke="#fff" stroke-width="6" fill="none"/>
+                        <rect x="10" y="40" width="30" height="20" rx="4" fill="#dcedc1"/><path d="M50,25 C46,25 43,28 43,32 C43,37 50,45 50,45 C50,45 57,37 57,32 C57,28 54,25 50,25 Z" fill="#ff3b30"/><circle cx="50" cy="31" r="2.5" fill="#fff"/>
+                    </svg>
+                </div>
+                <input id="loc-name" placeholder="地址名 (如: 星巴克)" class="api-input">
+                <input id="loc-detail" placeholder="详细地址" class="api-input">
+                <input id="loc-dist" placeholder="相距 (如: 500m)" class="api-input">
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <div class="api-btn" style="flex:1; background:#ccc;" onclick="document.getElementById('loc-modal').style.display='none'">取消</div>
+                    <div class="api-btn" style="flex:1;" onclick="sendLocationMsg()">发送</div>
+                </div>
+            </div>
+        </div>
+
         <input type="file" id="file-up" style="display:none" onchange="loadImg(event)">
         <input type="file" id="yx-file-up" style="display:none" onchange="loadYxImg(event)">
         <input type="file" id="contact-ava-up" style="display:none" onchange="loadContactAva(event)">
     </div>
 
     <script>
-        // ================= 全局工具与桌面逻辑 =================
+        // ================= 全局系统与全屏设置逻辑 =================
+        let globalSettings = JSON.parse(localStorage.getItem('global_settings_v1')) || {
+            fullScreen: false,
+            phoneFrame: '#1a1a1a',
+            islandEnabled: false,
+            islandBg: '#000000',
+            islandTextColor: '#ffffff',
+            islandText: '',
+            islandStatusImg: '',
+            islandCss: '',
+            yuxinCss: '',
+            chatCss: '',
+            bubbleConfig: { myBg: '#5b9dff', myColor: '#ffffff', theirBg: '#ffffff', theirColor: '#333333', shadow: 2, r1: 18, r2: 18, r3: 18, r4: 18 }
+        };
+
+        function applyGlobalSettings() {
+            if(globalSettings.fullScreen) { document.body.classList.add('is-fullscreen'); } 
+            else { document.body.classList.remove('is-fullscreen'); }
+            
+            document.documentElement.style.setProperty('--phone-frame', globalSettings.phoneFrame);
+            
+            let island = document.getElementById('dynamic-island');
+            if(globalSettings.islandEnabled) { island.style.display = 'flex'; }
+            else { island.style.display = 'none'; }
+            
+            let isBg = globalSettings.islandBg || '#000000';
+            if (isBg === 'transparent' || isBg === 'rgba(0,0,0,0)') isBg = '#000000';
+            island.style.background = isBg;
+            
+            let dText = document.getElementById('di-text');
+            dText.innerText = globalSettings.islandText || sysUser.bio || '无签名';
+            dText.style.color = globalSettings.islandTextColor || '#ffffff';
+            let isVText = document.getElementById('is-v-text');
+            if(isVText) isVText.innerText = globalSettings.islandText || sysUser.bio || '无签名';
+            
+            if (globalSettings.islandStatusImg) {
+                let img = document.getElementById('di-play-img');
+                if(!img) {
+                    img = document.createElement('img');
+                    img.id = 'di-play-img';
+                    document.getElementById('dynamic-island').appendChild(img);
+                }
+                img.src = globalSettings.islandStatusImg;
+                document.getElementById('di-play').style.display = 'none';
+                img.style.display = 'block';
+            } else {
+                document.getElementById('di-play').style.display = 'block';
+                let img = document.getElementById('di-play-img');
+                if(img) img.style.display = 'none';
+            }
+            
+            document.getElementById('island-custom-css').innerHTML = globalSettings.islandCss || "";
+
+            // 气泡 CSS
+            let bs = globalSettings.bubbleConfig;
+            if(bs) {
+                let css = `
+                    .yx-chat-bubble.right { background: ${bs.myBg} !important; color: ${bs.myColor} !important; box-shadow: 0 ${bs.shadow}px ${bs.shadow*3}px rgba(0,0,0,0.1) !important; border-radius: ${bs.r1}px ${bs.r2}px ${bs.r3}px ${bs.r4}px !important; border-top-right-radius: 4px !important; }
+                    .yx-chat-bubble.left { background: ${bs.theirBg} !important; color: ${bs.theirColor} !important; box-shadow: 0 ${bs.shadow}px ${bs.shadow*3}px rgba(0,0,0,0.1) !important; border-radius: ${bs.r1}px ${bs.r2}px ${bs.r3}px ${bs.r4}px !important; border-top-left-radius: 4px !important; }
+                `;
+                document.getElementById('bubble-custom-css').innerHTML = css;
+            }
+            document.getElementById('yuxin-custom-css').innerHTML = globalSettings.yuxinCss || "";
+            document.getElementById('chat-custom-css').innerHTML = globalSettings.chatCss || "";
+        }
+
+        function openFullscreenSettings() {
+            document.getElementById('fullscreen-settings-view').style.display='flex';
+            document.getElementById('sw-fullScreen').classList.toggle('on', globalSettings.fullScreen);
+            document.getElementById('sw-islandEnabled').classList.toggle('on', globalSettings.islandEnabled);
+            document.getElementById('cb-phoneFrame').style.background = globalSettings.phoneFrame;
+            document.getElementById('cb-islandBg').style.background = globalSettings.islandBg;
+            document.getElementById('cb-islandTextColor').style.background = globalSettings.islandTextColor || '#ffffff';
+        }
+
+        function toggleGlobalSetting(e, key) {
+            e.stopPropagation();
+            globalSettings[key] = !globalSettings[key];
+            localStorage.setItem('global_settings_v1', JSON.stringify(globalSettings));
+            applyGlobalSettings();
+            let sw = document.getElementById('sw-' + key);
+            if(sw) sw.classList.toggle('on', globalSettings[key]);
+        }
+
+        function changeGlobalColor(key) {
+            showModal('输入十六进制颜色值 (如: #ff0000)', globalSettings[key], (v) => {
+                if(v) {
+                    v = v.trim();
+                    if(!v.startsWith('#')) v = '#' + v;
+                    if(v.length === 4) v = '#' + v[1]+v[1]+v[2]+v[2]+v[3]+v[3]; // 简写转换补充至6位(7个字符含#)
+                    globalSettings[key] = v;
+                    localStorage.setItem('global_settings_v1', JSON.stringify(globalSettings));
+                    applyGlobalSettings();
+                    document.getElementById('cb-' + key).style.background = v;
+                }
+            }, 'input');
+        }
+
+        function editIslandText() {
+            showModal("修改灵动岛文字", globalSettings.islandText || sysUser.bio, (v) => {
+                globalSettings.islandText = v; localStorage.setItem('global_settings_v1', JSON.stringify(globalSettings)); applyGlobalSettings();
+            }, "input");
+        }
+        function loadIslandStatusImg(e) {
+            if(e.target.files[0]){ let r=new FileReader(); r.onload=()=>{ globalSettings.islandStatusImg = r.result; localStorage.setItem('global_settings_v1', JSON.stringify(globalSettings)); applyGlobalSettings(); }; r.readAsDataURL(e.target.files[0]); }
+            e.target.value = '';
+        }
+        function editIslandCss() {
+            let defCss = `/*
+  #dynamic-island { ... } 
+  修改背景颜色: background: #ff0000 !important;
+  修改高度: height: 40px !important;
+  修改宽度: width: 150px !important;
+*/\n` + (globalSettings.islandCss || "");
+            showModal("自定义灵动岛 CSS", defCss, (v) => {
+                if(v!==false) { globalSettings.islandCss = v; localStorage.setItem('global_settings_v1', JSON.stringify(globalSettings)); applyGlobalSettings(); }
+            }, "textarea");
+        }
+        function editYuxinCss() {
+            let defCss = `/*
+  ====== 鱼信全局自定义 CSS 指南 ======
+  你可以自由覆盖已有样式，打造专属主题。
+  1. 修改顶部栏背景：
+  .yx-header { background: #fdfdfd !important; border-bottom: 1px solid #eee !important; }
+  2. 修改主背景色：
+  #yuxin-view { background: #fafafa !important; }
+  3. 修改底部导航栏样式：
+  .yx-tabbar { background: rgba(255,255,255,0.8) !important; backdrop-filter: blur(20px); border-radius: 30px !important; }
+*/\n` + (globalSettings.yuxinCss || "");
+            showModal("鱼信全局自定义 CSS", defCss, (v) => {
+                if(v!==false) { globalSettings.yuxinCss = v; localStorage.setItem('global_settings_v1', JSON.stringify(globalSettings)); applyGlobalSettings(); }
+            }, "textarea");
+        }
+        function editChatCss() {
+            let defCss = `/*
+  ====== 聊天页面自定义 CSS 指南 ======
+  1. 聊天界面总背景 (替换纯色或图片)：
+  #chat-view { background: #fdfdfd !important; }
+  2. 聊天头部 (名字那一栏)：
+  #chat-view .yx-header { background: rgba(255,255,255,0.9) !important; border-bottom: 1px solid #eee !important; }
+  3. 底部输入框区域背景：
+  #chat-view > div:last-child { background: #ffffff !important; }
+  4. 输入框样式修改：
+  #chat-ipt { background: #f0f0f0 !important; border-radius: 20px !important; color: #333 !important; }
+*/\n` + (globalSettings.chatCss || "");
+            showModal("聊天界面深度自定义 CSS", defCss, (v) => {
+                if(v!==false) { globalSettings.chatCss = v; localStorage.setItem('global_settings_v1', JSON.stringify(globalSettings)); applyGlobalSettings(); }
+            }, "textarea");
+        }
+
+        // ================= 桌面App替换配置 =================
+        let appCustomConfig = JSON.parse(localStorage.getItem('app_custom_config')) || {};
+        
+        function applyAppCustomConfig() {
+            document.querySelectorAll('.item.app').forEach(el => {
+                let origName = el.getAttribute('data-orig-name') || el.getAttribute('data-name');
+                if(!el.getAttribute('data-orig-name')) el.setAttribute('data-orig-name', origName);
+                
+                let conf = appCustomConfig[origName];
+                let label = el.querySelector('.app-label');
+                let iconBox = el.querySelector('.app-icon');
+                if(conf) {
+                    if(conf.name) { el.setAttribute('data-name', conf.name); if(label) label.innerText = conf.name; }
+                    if(conf.icon) {
+                        if(!iconBox.getAttribute('data-orig-html')) iconBox.setAttribute('data-orig-html', iconBox.innerHTML);
+                        iconBox.innerHTML = `<img src="${conf.icon}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">`;
+                    }
+                }
+            });
+        }
+        
+        function openAppearanceSettings() {
+            renderAppIconList();
+            loadBubbleStyles();
+            document.getElementById('appearance-settings-view').style.display = 'flex';
+        }
+
+        function renderAppIconList() {
+            let box = document.getElementById('app-icon-list');
+            box.innerHTML = '';
+            let apps = [];
+            document.querySelectorAll('.item.app').forEach(el => {
+                let on = el.getAttribute('data-orig-name');
+                if(on && !apps.includes(el)) apps.push(el);
+            });
+            let uniqueApps = [];
+            let seenNames = new Set();
+            apps.forEach(el => {
+                let name = el.getAttribute('data-orig-name');
+                if(!seenNames.has(name)) { seenNames.add(name); uniqueApps.push(el); }
+            });
+
+            uniqueApps.forEach(el => {
+                let origName = el.getAttribute('data-orig-name');
+                let curName = el.getAttribute('data-name');
+                let conf = appCustomConfig[origName] || {};
+                let iconHtml = conf.icon ? `<img src="${conf.icon}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">` : el.querySelector('.app-icon').innerHTML;
+                
+                box.innerHTML += `
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:8px; flex-shrink:0;">
+                        <div style="width:52px; height:52px; background:#fff; border-radius:16px; box-shadow:0 4px 10px rgba(0,0,0,0.05); cursor:pointer; display:flex; justify-content:center; align-items:center; overflow:hidden;" onclick="startChangeAppIcon('${origName}')">${iconHtml}</div>
+                        <div style="font-size:11px; color:#555; font-weight:600; cursor:pointer;" onclick="changeAppName('${origName}', '${curName}')">${curName} <svg style="width:10px; stroke:#bbb; fill:none; display:inline;" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+                    </div>
+                `;
+            });
+        }
+
+        let curEditAppOrigName = '';
+        function startChangeAppIcon(origName) {
+            curEditAppOrigName = origName;
+            document.getElementById('app-icon-up').click();
+        }
+        function loadAppIconImg(e) {
+            if(e.target.files[0]){ 
+                let r=new FileReader(); 
+                r.onload=()=>{ 
+                    if(!appCustomConfig[curEditAppOrigName]) appCustomConfig[curEditAppOrigName] = {};
+                    appCustomConfig[curEditAppOrigName].icon = r.result; 
+                    localStorage.setItem('app_custom_config', JSON.stringify(appCustomConfig));
+                    applyAppCustomConfig(); renderAppIconList();
+                }; 
+                r.readAsDataURL(e.target.files[0]); 
+            } 
+            e.target.value = '';
+        }
+        function changeAppName(origName, curName) {
+            showModal('修改App名称', curName, (v) => {
+                if(v && v.trim()) {
+                    if(!appCustomConfig[origName]) appCustomConfig[origName] = {};
+                    appCustomConfig[origName].name = v.trim();
+                    localStorage.setItem('app_custom_config', JSON.stringify(appCustomConfig));
+                    applyAppCustomConfig(); renderAppIconList();
+                }
+            }, 'input');
+        }
+
+        function loadBubbleStyles() {
+            let bs = globalSettings.bubbleConfig || { myBg: '#5b9dff', myColor: '#ffffff', theirBg: '#ffffff', theirColor: '#333333', shadow: 2, r1: 18, r2: 18, r3: 18, r4: 18 };
+            document.getElementById('b-my-bg').value = bs.myBg;
+            document.getElementById('b-my-color').value = bs.myColor;
+            document.getElementById('b-their-bg').value = bs.theirBg;
+            document.getElementById('b-their-color').value = bs.theirColor;
+            document.getElementById('b-shadow').value = bs.shadow;
+            document.getElementById('b-r1').value = bs.r1;
+            document.getElementById('b-r2').value = bs.r2;
+            document.getElementById('b-r3').value = bs.r3;
+            document.getElementById('b-r4').value = bs.r4;
+            ['shadow','r1','r2','r3','r4'].forEach(k => document.getElementById('bv-'+k).innerText = bs[k]);
+        }
+        function updateBubbleStyles() {
+            let bs = {
+                myBg: document.getElementById('b-my-bg').value,
+                myColor: document.getElementById('b-my-color').value,
+                theirBg: document.getElementById('b-their-bg').value,
+                theirColor: document.getElementById('b-their-color').value,
+                shadow: document.getElementById('b-shadow').value,
+                r1: document.getElementById('b-r1').value,
+                r2: document.getElementById('b-r2').value,
+                r3: document.getElementById('b-r3').value,
+                r4: document.getElementById('b-r4').value
+            };
+            ['shadow','r1','r2','r3','r4'].forEach(k => document.getElementById('bv-'+k).innerText = bs[k]);
+            globalSettings.bubbleConfig = bs; localStorage.setItem('global_settings_v1', JSON.stringify(globalSettings)); applyGlobalSettings();
+        }
+
+        // ================= 桌面与通用逻辑 =================
         const starShapes = ["M12 8 L12.8 11.2 L16 12 L12.8 12.8 L12 16 L11.2 12.8 L8 12 L11.2 11.2 Z","M12 9 L13 11 L15 12 L13 13 L12 15 L11 13 L9 12 L11 11 Z","M12 10 L12.5 11.5 L14 12 L12.5 12.5 L12 14 L11.5 12.5 L10 12 L11.5 11.5 Z","M12 8.5 L13.2 10.8 L15.5 12 L13.2 13.2 L12 15.5 L10.8 13.2 L8.5 12 L10.8 10.8 Z"];
         setInterval(() => { let d = new Date(); document.getElementById('time').innerText = d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0'); document.getElementById('star').setAttribute('d', starShapes[d.getSeconds() % starShapes.length]); }, 1000);
         
@@ -1065,9 +1627,14 @@
         function jump(i) { pIdx=i; slider.style.transform=`translateX(-${i*25}%)`; dots.forEach((d,j)=>d.classList.toggle('active',i===j)); }
         let sx=0;
         slider.addEventListener('touchstart', e => { if(!document.body.classList.contains('edit-mode')) sx=e.touches[0].clientX; });
-        slider.addEventListener('touchend', e => { if(document.body.classList.contains('edit-mode') || sx===0) return; let dx = sx - e.changedTouches[0].clientX; if(Math.abs(dx)>40) { dx>0&&pIdx<3?pIdx++ : dx<0&&pIdx>0?pIdx-- : 0; jump(pIdx); } sx=0; });
+        slider.addEventListener('touchmove', e => {  }); 
+        slider.addEventListener('touchend', e => { 
+            if(document.body.classList.contains('edit-mode') || sx===0) return; 
+            let dx = sx - e.changedTouches[0].clientX; 
+            if(Math.abs(dx)>40) { dx>0&&pIdx<3?pIdx++ : dx<0&&pIdx>0?pIdx-- : 0; jump(pIdx); } 
+            sx=0; 
+        });
 
-        // 全局十六进制颜色转透明度RGBA函数
         function hexToRgba(hex, alpha) {
             let r=0,g=0,b=0;
             if(!hex) return `rgba(0,0,0,${alpha})`;
@@ -1077,11 +1644,17 @@
             return `rgba(${r},${g},${b},${alpha})`;
         }
 
-        // 全局配置存储
-        let sysUser = JSON.parse(localStorage.getItem('sys_user_config')) || { name: '小鱼', id: '520', bio: '鱼鱼鱼', ava: '' };
+        let sysUser = JSON.parse(localStorage.getItem('sys_user_config')) || { name: '小鱼', id: '520', bio: '鱼鱼鱼', ava: '', emoticon: '^⎚˕⎚^' };
         let myProfileConfig = JSON.parse(localStorage.getItem('my_profile_config')) || { frameImg: '', fSize: 100, fX: 0, fY: 0, dotColor: '#68d391', status: '在线' };
+        document.getElementById('my-emoticon').innerText = sysUser.emoticon || '^⎚˕⎚^';
 
-        // 统一弹窗逻辑
+        // 同步灵动岛信息
+        function updateIslandInfo() {
+            document.getElementById('di-text').innerText = globalSettings.islandText || sysUser.bio || '无签名';
+            let ava = document.getElementById('di-ava');
+            if(sysUser.ava) { ava.src = sysUser.ava; ava.style.display = 'block'; } else { ava.style.display = 'none'; }
+        }
+
         let modalCallback = null;
         function showModal(title, defaultVal, callback, type='input', options=[]) {
             document.getElementById('m-title').innerText = title;
@@ -1093,7 +1666,7 @@
             ipt.style.display = type==='input' ? 'block' : 'none';
             txt.style.display = type==='textarea' ? 'block' : 'none';
             sel.style.display = type==='select' ? 'block' : 'none';
-            desc.style.display = (type==='alert' || type==='confirm') ? 'block' : 'none';
+            desc.style.display = (type==='alert' || type==='confirm' || type==='custom_location') ? 'block' : 'none';
 
             if(type === 'select') { sel.innerHTML = options.map(o => `<option value="${o.value}">${o.label}</option>`).join(''); } 
             else if(type === 'textarea') { txt.value = defaultVal || ''; } 
@@ -1130,13 +1703,27 @@
                 if(document.body.classList.contains('edit-mode')) return;
                 e.stopPropagation(); tId=el.id; 
                 showModal('编辑内容', el.innerText.replace(' 제발 꼭 행복하세요', '제발 꼭 행복하세요'), (val) => {
-                    if(tId === 't4') document.getElementById(tId).innerHTML = '<div class="square-bullet"></div> ' + val; else document.getElementById(tId).innerText = val;
+                    if(tId === 't4') document.getElementById(tId).innerHTML = '<div class="square-bullet"></div> ' + val; 
+                    else document.getElementById(tId).innerText = val;
+                    if(tId === 'my-emoticon') { sysUser.emoticon = val; localStorage.setItem('sys_user_config', JSON.stringify(sysUser)); }
                 }, 'input');
             });
         });
         
         function loadImg(e){ if(e.target.files[0]){ let r=new FileReader(); r.onload=()=>{ document.getElementById('def-avatar').style.display='none'; let img = document.getElementById('avatar'); img.style.display='block'; img.src=r.result; }; r.readAsDataURL(e.target.files[0]); } }
-        function loadYxImg(e){ if(e.target.files[0]){ let r=new FileReader(); r.onload=()=>{ document.getElementById('yx-def-avatar').style.display='none'; let img = document.getElementById('yx-avatar'); img.style.display='block'; img.src=r.result; }; r.readAsDataURL(e.target.files[0]); } }
+        
+        // 邮票区头像统一绑定 sysUser
+        function loadYxImg(e){ 
+            if(e.target.files[0]){ 
+                let r=new FileReader(); 
+                r.onload=()=>{ 
+                    sysUser.ava = r.result;
+                    localStorage.setItem('sys_user_config', JSON.stringify(sysUser)); 
+                    renderSysUserCard(); // 触发全系统同步
+                }; 
+                r.readAsDataURL(e.target.files[0]); 
+            } 
+        }
 
         const cc = document.getElementById('control-center');
         let startY = 0, ccOpen = false;
@@ -1163,6 +1750,7 @@
             document.getElementById('yuxin-view').style.display='none';
             document.getElementById('api-view').style.display='none';
             document.getElementById('settings-view').style.display='none';
+            document.getElementById('appearance-settings-view').style.display='none';
             document.getElementById('recover-view').style.display='none';
             document.getElementById('yuce-view').style.display='none';
             document.getElementById('touch-nav').style.display='none';
@@ -1177,13 +1765,13 @@
             item.addEventListener('touchend', e => {
                 clearTimeout(timer);
                 if(!isEdit && !dragEl && !ccOpen) { 
-                    let n = item.getAttribute('data-name'); 
+                    let n = item.getAttribute('data-orig-name') || item.getAttribute('data-name'); 
                     if(n && n !== 'widget') { 
                         if(n === '鱼信') openYuxin(); 
                         else if(n === 'API') openApiApp();
                         else if(n === '设置') openSettingsApp();
                         else if(n === '鱼册') openYuceApp();
-                        else { document.getElementById('app-title').innerText=n; document.getElementById('app-view').style.display='flex'; }
+                        else { document.getElementById('app-title').innerText=item.getAttribute('data-name')||n; document.getElementById('app-view').style.display='flex'; }
                     } 
                 }
                 if(dragEl) { dragEl.classList.remove('dragging'); if(cloneEl) cloneEl.remove(); dragEl=cloneEl=null; }
@@ -1198,7 +1786,6 @@
             if(ti && ti !== dragEl) { let r = ti.getBoundingClientRect(); ti.parentNode.insertBefore(dragEl, (t.clientX - r.left) > (r.width / 2) ? ti.nextSibling : ti); }
         }, {passive: false});
 
-        // 悬浮球
         const touchBall = document.getElementById('assist-touch');
         let bTimer, bIsDrag = false, touchSx = 0, touchSy = 0, ballX = 0, ballY = 0;
         touchBall.addEventListener('touchstart', e => {
@@ -1213,7 +1800,15 @@
         }, {passive: false});
         touchBall.addEventListener('touchend', e => {
             e.stopPropagation(); clearTimeout(bTimer); touchBall.style.transform = 'scale(1)';
-            if (!bIsDrag) { document.getElementById('touch-nav').style.display = 'grid'; } else { 
+            let touchNav = document.getElementById('touch-nav');
+            if (!bIsDrag) { 
+                let rect = touchBall.getBoundingClientRect();
+                touchNav.style.display = 'grid';
+                let left = rect.left - 190; 
+                if(left < 10) left = rect.right + 10;
+                touchNav.style.left = left + 'px';
+                touchNav.style.top = rect.top + 'px';
+            } else { 
                 touchBall.style.transition = 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)'; 
                 let r = touchBall.getBoundingClientRect(), p = document.getElementById('phone').getBoundingClientRect();
                 touchBall.style.left = Math.max(10, Math.min(p.width - r.width - 10, touchBall.offsetLeft)) + 'px';
@@ -1263,11 +1858,13 @@
             let html = ''; apiLogs.forEach(l => { html += `<div class="api-log-item"><div>时间：${l.time}</div><div style="color:var(--blue)">模型：${l.model}</div><div>Token消耗：${l.tokens}</div></div>`; });
             if(!html) html = '<div style="text-align:center; color:#ccc; margin-top:20px;">暂无日志</div>'; document.getElementById('api-logs-container').innerHTML = html;
         }
-        function clearApiLogs() { apiLogs = []; localStorage.removeItem('yx_api_logs'); renderApiLogs(); }
+        function clearApiLogs(){ apiLogs=[];localStorage.removeItem('yx_api_logs');renderApiLogs(); }
         function addApiLog(tokens) { apiLogs.unshift({ time: new Date().toLocaleString(), model: apiConfig.model, tokens: tokens }); if(apiLogs.length > 20) apiLogs.pop(); localStorage.setItem('yx_api_logs', JSON.stringify(apiLogs)); }
 
         /* ================= 🚀 设置系统应用逻辑 ================= */
         function openSettingsApp() { document.getElementById('settings-view').style.display='flex'; renderSysUserCard(); }
+        
+        // 核心同步函数：全局更新自身头像与信息
         function renderSysUserCard() {
             document.getElementById('sys-name').innerText = sysUser.name || '小鱼';
             document.getElementById('sys-id').innerText = sysUser.id || '520';
@@ -1276,7 +1873,7 @@
             if(sysUser.ava) { avaBox.querySelector('img').src=sysUser.ava; avaBox.querySelector('img').style.display='block'; avaBox.querySelector('svg').style.display='none'; }
             else { avaBox.querySelector('img').style.display='none'; avaBox.querySelector('svg').style.display='block'; }
             
-            // 同步更新鱼信我的主页和鱼册顶部
+            // 同步更新鱼信我的主页
             document.getElementById('my-name-display').innerText = sysUser.name || '小鱼';
             document.getElementById('my-id-display').innerText = sysUser.id || '520';
             
@@ -1291,10 +1888,38 @@
                 if(myAvaD) myAvaD.style.display='block';
             }
             
+            let myPolImg = document.getElementById('my-polaroid-img');
+            if(myPolImg) {
+                if(sysUser.ava) { myPolImg.src = sysUser.ava; myPolImg.style.display = 'block'; }
+                else myPolImg.style.display = 'none';
+            }
+
+            // 同步鱼册顶部头像
+            let yuceAva = document.getElementById('yuce-sys-ava');
+            if(sysUser.ava) { yuceAva.src = sysUser.ava; yuceAva.style.display='block'; }
+            else { yuceAva.style.display='none'; }
+            
+            // 同步邮票区域头像
+            let stampImg = document.getElementById('yx-avatar');
+            let stampDef = document.getElementById('yx-def-avatar');
+            if(sysUser.ava) {
+                stampImg.src = sysUser.ava;
+                stampImg.style.display = 'block';
+                if(stampDef) stampDef.style.display = 'none';
+            } else {
+                stampImg.style.display = 'none';
+                if(stampDef) stampDef.style.display = 'block';
+            }
+
             document.getElementById('my-status-dot').style.background = myProfileConfig.dotColor;
             document.getElementById('my-status-badge').innerText = myProfileConfig.status;
-            updateFrameStyle(); // 渲染我的主页遮罩
+            updateFrameStyle();
+            updateIslandInfo();
+            
+            // 刷新聊天历史记录让右侧头像同步
+            if(currChatId) renderChatHistory();
         }
+
         function editSysField(field) {
             let title = field==='name'?'修改昵称':field==='id'?'修改ID':'修改个性签名';
             showModal(title, sysUser[field], (v)=>{
@@ -1327,7 +1952,7 @@
             {
                 id: 'yc_1', name: '白月光', alias: '小白', gender: '女', height: '165cm',
                 appearance: '黑色长直发，清冷淡雅', character: '温柔、话少、傲娇', hiddenCharacter: '其实是个粘人精',
-                bg: '你的初恋女友，由于某种原因重新联系上了', size: '80-60-85', yuxinId: 'bai_01', phone: '13800000000', avaImg: '', date: '2024-10-01'
+                bg: '你的初恋女友，由于某种原因重新联系上了', size: '80-60-85', yuxinId: 'bai_01', phone: '13800000000', avaImg: '', date: '2024-10-01', greeting: '好久不见，你还好吗？'
             }
         ];
         let currYuceId = null;
@@ -1335,8 +1960,7 @@
         function openYuceApp() {
             document.getElementById('yuce-view').style.display='flex';
             document.getElementById('yuce-sys-name').innerText = sysUser.name || '小鱼';
-            let ava = document.getElementById('yuce-sys-ava');
-            if(sysUser.ava) { ava.src = sysUser.ava; ava.style.display='block'; } else ava.style.display='none';
+            renderSysUserCard(); 
             renderYuceList();
         }
         function renderYuceList() {
@@ -1351,7 +1975,7 @@
                 box.innerHTML += `
                     <div style="position:relative; background:#fff; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.03); margin-bottom:15px; padding:20px; display:flex; flex-direction:column; align-items:center;">
                         <div style="position:absolute; top:0; left:0; background:#2c2c2e; color:#fff; padding:4px 10px; border-radius:16px 0 16px 0; font-size:11px; font-weight:bold;">No.${idx+1}</div>
-                        <div style="width:70px; height:70px; background:#f4f4f7; border-radius:18px; overflow:hidden; margin-bottom:10px; display:flex; justify-content:center; align-items:center;">${imgHtml}</div>
+                        <div style="width:70px; height:70px; background:#f4f4f7; border-radius:12px; overflow:hidden; margin-bottom:10px; display:flex; justify-content:center; align-items:center;">${imgHtml}</div>
                         <div style="display:flex; align-items:center; gap:5px; font-size:15px; font-weight:bold; color:#333;">${c.name} <svg onclick="openYuceEdit('${c.id}')" viewBox="0 0 24 24" style="width:14px; stroke:var(--blue); fill:none; stroke-width:2; cursor:pointer;"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
                     </div>
                 `;
@@ -1359,7 +1983,7 @@
         }
         function openYuceEdit(id) {
             currYuceId = id;
-            let c = id ? yuceChars.find(x => x.id === id) : {id: 'yc_'+Date.now(), name: '新人物', alias:'', gender:'', height:'', appearance:'', character:'', hiddenCharacter:'', bg:'', size:'', yuxinId:'yx_'+Math.floor(Math.random()*1000), phone:'', avaImg:'', date: new Date().toISOString().split('T')[0]};
+            let c = id ? yuceChars.find(x => x.id === id) : {id: 'yc_'+Date.now(), name: '新人物', alias:'', gender:'', height:'', appearance:'', character:'', hiddenCharacter:'', bg:'', size:'', yuxinId:'yx_'+Math.floor(Math.random()*1000), phone:'', avaImg:'', date: new Date().toISOString().split('T')[0], greeting: ''};
             if(!id) { yuceChars.push(c); currYuceId = c.id; }
             
             document.getElementById('yc-e-img').src = c.avaImg || '';
@@ -1368,7 +1992,7 @@
             document.getElementById('yc-e-name').innerText = c.name;
             document.getElementById('yc-e-date').innerText = c.date || new Date().toISOString().split('T')[0];
 
-            ['name','alias','gender','height','appearance','character','hiddenCharacter','bg','size','yuxinId','phone'].forEach(k => {
+            ['name','alias','gender','height','appearance','character','hiddenCharacter','bg','size','yuxinId','phone','greeting'].forEach(k => {
                 let el = document.getElementById('ycf-'+k);
                 if(el) el.innerText = c[k] || '　';
             });
@@ -1377,7 +2001,9 @@
         }
         function editYcField(field, label) {
             let c = yuceChars.find(x => x.id === currYuceId);
-            showModal(`编辑 ${label}`, c[field], (v) => {
+            showModal(`编辑 ${label}`, c[field], (v) =>
+
+{
                 if(v !== false) {
                     c[field] = v.trim();
                     let el = document.getElementById('ycf-'+field);
@@ -1385,7 +2011,7 @@
                     if(field === 'name') document.getElementById('yc-e-name').innerText = v.trim();
                     localStorage.setItem('yuce_chars', JSON.stringify(yuceChars));
                 }
-            }, field==='bg'?'textarea':'input');
+            }, (field==='bg'||field==='greeting')?'textarea':'input');
         }
         function loadYuceImg(e) {
             if(e.target.files[0]){ 
@@ -1414,8 +2040,11 @@
 
         // 好友/群聊数据
         let yxContacts = JSON.parse(localStorage.getItem('yx_contacts')) || [
-            { id: 'c1', name: '小鱼', pinyin:'X', wechatId:'xiaoyu_520', avaImg:'', color: '#ffd6e0', msg: '快给我发消息试试！', groupId: 'g1', unread: 1, isTop: true, isStar: true, isMute: false, isBlack: false, isDeleted: false, history: [{t:'left', m:'快给我发消息试试！', sender:'c1'}], chatBg: '', prompt: '你是一个贴心可爱的人，名叫小鱼', isRoleplayMode: false, shape: 'none', radius: 12, frameConfig: {img:'', size:100, x:0, y:0} },
-            { id: 'c2', name: '测试bot', pinyin:'C', wechatId:'test_bot_api', avaImg:'', color: '#dcedc1', msg: '我是API机器人~', groupId: 'g1', unread: 0, isTop: false, isStar: false, isMute: false, isBlack: false, isDeleted: false, history: [{t:'left', m:'配置好API后我就能说话啦！', sender:'c2'}], chatBg: '', prompt: '你是一个可爱的机器人助手，说话要加上喵。', isRoleplayMode: false, shape: 'none', radius: 12, frameConfig: {img:'', size:100, x:0, y:0} }
+            { 
+                id: 'c1', name: '小鱼', pinyin:'X', wechatId:'xiaoyu_520', avaImg:'', color: '#ffd6e0', msg: '快给我发消息试试！', groupId: 'g1', unread: 1, isTop: true, isStar: true, isMute: false, isBlack: false, isDeleted: false, history: [{t:'left', m:'快给我发消息试试！', sender:'c1'}], chatBg: '', prompt: '你是一个贴心可爱的人，名叫小鱼', 
+                msgConfig: { replyMode: 'multi-auto', prompt: '你是一个贴心可爱的人，名叫小鱼' },
+                isRoleplayMode: false, shape: 'none', radius: 12, frameConfig: {img:'', size:100, x:0, y:0} 
+            }
         ];
         let currChatId = null;
 
@@ -1439,8 +2068,8 @@
         }
         function switchGroupFilter(id, name) { currFilterId = id; document.getElementById('curr-group-hint').innerText = '当前：' + name; renderGroupTabs(); renderYxContacts(); }
 
-        // 获取好友专属的形状与圆角样式
         function getContactShapeStyle(c) {
+            if(!c) return '';
             let style = `border-radius: ${c.radius||0}px;`;
             if(c.shape && c.shape !== 'none') style += ` clip-path: ${c.shape}; -webkit-clip-path: ${c.shape};`;
             return style;
@@ -1457,12 +2086,10 @@
                 const group = initGroups.find(g => g.id === c.groupId && g.id !== 'all');
                 let groupTag = group ? `<span class="c-group-tag" style="background:${hexToRgba(group.color, 0.15)}; color:${group.color};">· ${group.name}</span>` : '';
                 let dotHTML = c.unread > 0 ? `<div class="yx-unread-dot ${c.isMute ? 'mute' : ''}"></div>` : '';
-                let starHTML = c.isStar ? `<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#ffb3c6;margin-right:4px;vertical-align:middle;position:relative;top:-1px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>` : '';
+                let starHTML = c.isStar ? `<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:var(--pink);margin-right:4px;vertical-align:middle;position:relative;top:-1px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>` : '';
                 
-                // 如果是群聊图标不同处理
                 let avaHtml = c.avaImg ? `<img style="display:block;" src="${c.avaImg}">` : (c.isGroup ? `<div style="width:100%;height:100%;background:${c.color};display:flex;justify-content:center;align-items:center;"><svg viewBox="0 0 24 24" style="width:24px;stroke:#fff;fill:none;stroke-width:2;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>` : `<div style="width:100%;height:100%;background:${c.color}"></div>`);
                 
-                // 专属形状
                 let shapeStyle = c.isGroup ? 'border-radius: 12px;' : getContactShapeStyle(c);
                 let frameHTML = '';
                 if(!c.isGroup && c.frameConfig && c.frameConfig.img) {
@@ -1475,7 +2102,6 @@
             renderFriendsBook(); 
         }
 
-        // 滑动删除逻辑 
         let swipeSx = 0, isSwiping = false;
         document.getElementById('yx-contact-list-container').addEventListener('touchstart', e => {
             let inner = e.target.closest('.yx-contact-inner'); if(!inner) return;
@@ -1521,7 +2147,6 @@
         }
         function scrollToLetter(l) { let el = document.getElementById('fl-' + l); let container = document.getElementById('f-list-container'); if(el && container) container.scrollTo({top: el.offsetTop, behavior: 'smooth'}); }
 
-        // 通讯录首字母或名称搜索
         function searchContact() {
             showModal('搜索联系人', '', (v) => {
                 if(!v || !v.trim()) return;
@@ -1539,7 +2164,15 @@
             }, 'input');
         }
 
-        initYuxinStatic(); renderGroupTabs(); renderYxContacts(); renderSysUserCard();
+        function initData() {
+            applyGlobalSettings();
+            applyAppCustomConfig();
+            initYuxinStatic(); 
+            renderGroupTabs(); 
+            renderYxContacts(); 
+            renderSysUserCard();
+        }
+        initData();
 
         function openYuxin() { let v = document.getElementById('yuxin-view'), s = document.getElementById('yx-splash'); v.style.display = 'flex'; s.style.display = 'flex'; s.style.opacity = '1'; let c = document.getElementById('yx-splash-content'); c.innerHTML = c.innerHTML; setTimeout(() => { let r = document.querySelector('.water-ripple'); if(r) r.classList.add('animate-ripple'); }, 50); setTimeout(() => { s.style.opacity = '0'; setTimeout(() => s.style.display = 'none', 400); }, 2400); }
         function jellyTab(el, idx) { document.querySelectorAll('.yx-tab').forEach(t => t.classList.remove('active')); el.classList.add('active'); el.classList.remove('jelly-anim'); void el.offsetWidth; el.classList.add('jelly-anim'); document.querySelectorAll('.yx-page').forEach((p, i) => p.style.display = (i === idx) ? 'flex' : 'none'); }
@@ -1552,11 +2185,38 @@
 
         // --- 我的主页相关逻辑 ---
         function changeMyStatus() { showModal("修改状态", myProfileConfig.status, (v) => { if(v) { myProfileConfig.status = v; document.getElementById('my-status-badge').innerText = v; saveMyProfileConfig(); } }, "input"); }
-        function changeMyDotColor() { showModal("输入色值 (十六进制)", myProfileConfig.dotColor, (v) => { if(v) { myProfileConfig.dotColor = v; document.getElementById('my-status-dot').style.background = v; saveMyProfileConfig(); } }, "input"); }
+        function changeMyDotColor() { 
+            showModal("输入色值 (十六进制)", myProfileConfig.dotColor, (v) => { 
+                if(v) { 
+                    v = v.trim();
+                    if(!v.startsWith('#')) v = '#' + v;
+                    if(v.length === 4) v = '#' + v[1]+v[1]+v[2]+v[2]+v[3]+v[3]; 
+                    myProfileConfig.dotColor = v; 
+                    document.getElementById('my-status-dot').style.background = v; 
+                    saveMyProfileConfig(); 
+                } 
+            }, "input"); 
+        }
         function saveMyProfileConfig() { localStorage.setItem('my_profile_config', JSON.stringify(myProfileConfig)); }
 
+        function openMyActionView(title) {
+            document.getElementById('my-action-title').innerText = title;
+            document.getElementById('my-action-view').style.display = 'flex';
+        }
+
         // 头像与头像框逻辑
-        function loadMyAva(e) { if(e.target.files[0]){ let r=new FileReader(); r.onload=()=>{ sysUser.ava = r.result; localStorage.setItem('sys_user_config', JSON.stringify(sysUser)); renderSysUserCard(); }; r.readAsDataURL(e.target.files[0]); } }
+        function loadMyAva(e) { 
+            if(e.target.files[0]){ 
+                let r=new FileReader(); 
+                r.onload=()=>{ 
+                    sysUser.ava = r.result; 
+                    localStorage.setItem('sys_user_config', JSON.stringify(sysUser)); 
+                    renderSysUserCard(); // 触发全系统同步
+                }; 
+                r.readAsDataURL(e.target.files[0]); 
+            } 
+        }
+        
         function loadMyFrame(e) { if(e.target.files[0]){ let r=new FileReader(); r.onload=()=>{ myProfileConfig.frameImg = r.result; saveMyProfileConfig(); updateFrameStyle(); }; r.readAsDataURL(e.target.files[0]); } }
         function updateFrameStyle() {
             let s = document.getElementById('frame-size-range').value;
@@ -1613,25 +2273,26 @@
                 return;
             }
             
-            // 清理旧的该人物的temp
             yxContacts = yxContacts.filter(x => !(x.yuxinId === yc.yuxinId && x.isTemp));
 
             let tempId = 'temp_' + Date.now();
             let prompt = `你扮演的角色：\n姓名：${yc.name}\n性别：${yc.gender}\n性格：${yc.character}\n隐藏性格：${yc.hiddenCharacter}\n背景：${yc.bg}\n外观：${yc.appearance}\n三围：${yc.size}\n请完全沉浸在这个角色中，以第一人称与我对话。`;
 
+            let initMsg = yc.greeting || ('你好，我是' + yc.name);
+
             let newContact = {
                 id: tempId, name: yc.name, pinyin: yc.name.charAt(0).toUpperCase(),
                 wechatId: yc.yuxinId, yuxinId: yc.yuxinId,
-                avaImg: yc.avaImg, color: '#e0f0ff', msg: '我是' + yc.name, groupId: 'all',
+                avaImg: yc.avaImg, color: '#e0f0ff', msg: initMsg, groupId: 'all',
                 unread: 0, isTop: false, isStar: false, isMute: false, isBlack: false, isDeleted: false,
-                history: [{t:'left', m:'你好，我是' + yc.name, sender: tempId}], chatBg: '', 
-                prompt: prompt, isRoleplayMode: true, shape: 'none', radius: 12, frameConfig: {img:'', size:100, x:0, y:0},
+                history: [{t:'left', m: initMsg, sender: tempId}], chatBg: '', 
+                prompt: prompt, msgConfig: { replyMode: 'multi-auto', prompt: prompt },
+                isRoleplayMode: true, shape: 'none', radius: 12, frameConfig: {img:'', size:100, x:0, y:0},
                 isTemp: true, isGroup: false
             };
             yxContacts.push(newContact);
             renderYxContacts();
             
-            // 跳转到临时聊天
             document.getElementById('yx-add-friend-view').style.display='none';
             handleOpenChat(tempId);
         }
@@ -1664,7 +2325,7 @@
                 myGroups.forEach(g => {
                     let imgHtml = g.avaImg ? `<img src="${g.avaImg}" style="width:100%;height:100%;object-fit:cover;">` : `<div style="width:100%;height:100%;background:${g.color};display:flex;justify-content:center;align-items:center;"><svg viewBox="0 0 24 24" style="width:20px;stroke:#fff;fill:none;stroke-width:2;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>`;
                     box.innerHTML += `
-                        <div class="yx-s-card" style="margin-bottom:10px; cursor:pointer;" onclick="closeAllBottomSheets(); handleOpenChat('${g.id}')">
+                        <div class="yx-s-card" style="margin-bottom:10px; cursor:pointer;" onclick="closeAllBottomSheets(); setTimeout(()=>handleOpenChat('${g.id}'), 300);">
                             <div class="yx-s-row" style="justify-content:flex-start;">
                                 <div style="width:40px;height:40px;border-radius:10px;overflow:hidden;margin-right:15px;">${imgHtml}</div>
                                 <div><div style="font-weight:bold;color:#333;font-size:15px;">${g.name} <span style="font-size:12px;color:#aaa;font-weight:normal;">(${g.members.length})</span></div><div style="font-size:12px;color:#888;">${g.wechatId || '暂无群号'}</div></div>
@@ -1701,18 +2362,22 @@
             let groupId = 'group_' + Date.now();
             let newGroup = {
                 id: groupId, name: name, pinyin: name.charAt(0).toUpperCase(),
-                wechatId: Math.floor(100000 + Math.random()*900000).toString(), // 群号ID
+                wechatId: Math.floor(100000 + Math.random()*900000).toString(), 
                 avaImg: '', color: '#dcedc1', msg: '欢迎加入群聊', groupId: 'all',
                 unread: 0, isTop: false, isStar: false, isMute: false, isBlack: false, isDeleted: false,
-                history: [{t:'sys', m:'你创建了群聊'}], chatBg: '', prompt: '欢迎来到本群！请大家友好交流。', isRoleplayMode: false, shape: 'none', radius: 12, frameConfig: {img:'', size:100, x:0, y:0},
+                history: [{t:'sys', m:'你创建了群聊'}], chatBg: '', prompt: '欢迎来到本群！请大家友好交流。', 
+                msgConfig: { replyMode: 'single', prompt: '欢迎来到本群！请大家友好交流。' },
+                isRoleplayMode: false, shape: 'none', radius: 12, frameConfig: {img:'', size:100, x:0, y:0},
                 isGroup: true,
-                owner: 'sys', // sys 代表自己
+                owner: 'sys',
                 admins: [],
                 members: ['sys', ...selectedIds],
                 myNickname: sysUser.name || '小鱼',
                 showMemberNames: true,
                 joinApprove: false,
-                onlyAdminEdit: false
+                onlyAdminEdit: false,
+                allowNewMemberTalk: true,
+                announcements: []
             };
             yxContacts.unshift(newGroup);
             renderYxContacts();
@@ -1721,9 +2386,13 @@
         }
 
         // --- 聊天界面 ---
+        // 修复防误触机制：点击列表时不判定为滑动才执行打开聊天界面
         function handleOpenChat(id) {
             currChatId = id; let c = yxContacts.find(x => x.id === id);
             if(c) {
+                if(!c.frameConfig) c.frameConfig = {img:'', size:100, x:0, y:0};
+                if(c.radius === undefined) c.radius = c.isGroup ? 12 : 0;
+                
                 c.unread = 0; renderYxContacts();
                 let titleName = c.isGroup ? `${c.name} (${c.members.length})` : c.name;
                 document.getElementById('chat-name').innerText = titleName;
@@ -1732,7 +2401,6 @@
                 let tag = document.getElementById('chat-group-tag');
                 if(group) { tag.style.display='inline-block'; tag.innerText=group.name; tag.style.background=`${hexToRgba(group.color, 0.15)}`; tag.style.color=group.color; } else tag.style.display='none';
 
-                // 更新顶部头像框 
                 let shapeStyle = c.isGroup ? 'border-radius:12px;' : getContactShapeStyle(c);
                 let inner = document.getElementById('chat-avatar-inner');
                 inner.style = "width:100%;height:100%;background:#e0e0e0;overflow:hidden; " + shapeStyle;
@@ -1750,7 +2418,8 @@
                     frame.style.transform = `translate(calc(-50% + ${fc.x*0.34}px), calc(-50% + ${fc.y*0.34}px))`;
                 } else { frame.style.display='none'; }
                 
-                let iptArea = document.getElementById('chat-input-area'); let blockedArea = document.getElementById('chat-blocked-area');
+                let iptArea = document.getElementById('chat-input-area'); 
+                let blockedArea = document.getElementById('chat-blocked-area');
                 let tempBar = document.getElementById('temp-chat-bar');
 
                 if(c.isTemp) {
@@ -1762,12 +2431,31 @@
                     else { iptArea.style.display = 'flex'; blockedArea.style.display = 'none'; }
                 }
 
+                // 处理群公告横幅
+                let banner = document.getElementById('group-announce-banner');
+                if(c.isGroup && c.isRoleplayMode && c.announcements && c.announcements.length > 0) {
+                    banner.style.display = 'flex';
+                    document.getElementById('group-announce-text').innerText = c.announcements[0].content;
+                } else {
+                    banner.style.display = 'none';
+                }
+
                 applyChatBg(); renderChatHistory();
                 let cv = document.getElementById('chat-view'); cv.style.display = 'flex'; setTimeout(() => cv.classList.add('show'), 10);
             }
         }
-        function closeChat() { let cv = document.getElementById('chat-view'); cv.classList.remove('show'); document.getElementById('chat-plus-panel').classList.remove('open'); setTimeout(() => cv.style.display = 'none', 300); }
-        function toggleChatPlus() { document.getElementById('chat-plus-panel').classList.toggle('open'); setTimeout(()=> { let box = document.getElementById('yx-chat-scroll'); box.scrollTop = box.scrollHeight; }, 300); }
+        
+        function closeChat() { 
+            let cv = document.getElementById('chat-view'); 
+            cv.classList.remove('show'); 
+            document.getElementById('chat-plus-panel').classList.remove('open'); 
+            setTimeout(() => cv.style.display = 'none', 300); 
+        }
+        
+        function toggleChatPlus() { 
+            document.getElementById('chat-plus-panel').classList.toggle('open'); 
+            setTimeout(()=> { let box = document.getElementById('yx-chat-scroll'); box.scrollTop = box.scrollHeight; }, 300); 
+        }
 
         function handleChatAvatarClick() {
             let c = yxContacts.find(x => x.id === currChatId);
@@ -1797,8 +2485,7 @@
                         } else {
                             let sender = null;
                             if(c.isGroup) {
-                                sender = yxContacts.find(x => x.id === h.sender) || c; // fallback
-                                // 提取管理员或群主标签
+                                sender = yxContacts.find(x => x.id === h.sender) || c; 
                                 if(c.owner === h.sender) roleTagHtml = `<div class="chat-role-tag" style="background:#ffb067;">群主</div>`;
                                 else if(c.admins && c.admins.includes(h.sender)) roleTagHtml = `<div class="chat-role-tag" style="background:#68d391;">群管理</div>`;
                                 
@@ -1814,7 +2501,8 @@
                             avaBox = `<div style="position:relative; width:32px; height:32px; flex-shrink:0;"><div style="width:100%;height:100%;overflow:hidden;${friendShape}">${friendAva}</div>${friendFrame}</div>`;
                         }
                         
-                        box.innerHTML += `<div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:15px; ${isMe?'flex-direction:row-reverse;':''}">${avaBox}<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'};max-width:75%;">${nameHtml}${roleTagHtml}<div class="yx-chat-bubble ${h.t}" data-idx="${idx}" style="margin-bottom:0; max-width:100%;">${h.m}</div></div></div>`; 
+                        // 为了定位气泡和避免遮挡增加 position:relative
+                        box.innerHTML += `<div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:15px; position:relative; ${isMe?'flex-direction:row-reverse;':''}">${avaBox}<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'};max-width:75%;">${nameHtml}${roleTagHtml}<div class="yx-chat-bubble ${h.t}" data-idx="${idx}" style="margin-bottom:0; max-width:100%;">${h.m}</div></div></div>`; 
                     }
                 });
                 bindChatBubbleEvents();
@@ -1825,55 +2513,376 @@
         function changeChatBg(e) { if(e.target.files[0]) { let r = new FileReader(); r.onload = () => { let c = yxContacts.find(x => x.id === currChatId); c.chatBg = r.result; applyChatBg(); showModal("提示", "聊天背景已成功更换！", null, "alert"); }; r.readAsDataURL(e.target.files[0]); } e.target.value = ''; }
         function applyChatBg() { let c = yxContacts.find(x => x.id === currChatId); let cv = document.getElementById('chat-view'); if(c && c.chatBg) { cv.style.backgroundImage = `url(${c.chatBg})`; cv.style.backgroundSize = 'cover'; cv.style.backgroundPosition = 'center'; } else { cv.style.backgroundImage = 'none'; cv.style.background = '#fdfdfd'; } }
 
+        // 真实化气泡长按菜单及定位
         let chatPressTimer, curBubbleIdx;
         function bindChatBubbleEvents() {
             document.querySelectorAll('.yx-chat-bubble').forEach(b => {
-                b.addEventListener('touchstart', e => { chatPressTimer = setTimeout(() => { curBubbleIdx = b.getAttribute('data-idx'); let m = document.getElementById('chat-menu'); m.style.display='flex'; m.style.left = Math.max(10, e.touches[0].clientX - 50) + 'px'; m.style.top = (e.touches[0].clientY - 45) + 'px'; }, 500); });
-                b.addEventListener('touchmove', () => clearTimeout(chatPressTimer)); b.addEventListener('touchend', () => clearTimeout(chatPressTimer));
+                b.addEventListener('touchstart', e => { 
+                    chatPressTimer = setTimeout(() => { 
+                        curBubbleIdx = b.getAttribute('data-idx'); 
+                        let m = document.getElementById('chat-menu'); 
+                        m.style.display='flex'; 
+                        
+                        let r = b.getBoundingClientRect();
+                        let mLeft = r.left + (r.width / 2) - 110; 
+                        if(mLeft < 10) mLeft = 10;
+                        if(mLeft + 220 > window.innerWidth - 10) mLeft = window.innerWidth - 230;
+                        
+                        m.style.left = mLeft + 'px'; 
+                        m.style.top = (r.top - 50) + 'px'; 
+                        m.style.opacity = '1';
+                    }, 500); 
+                });
+                b.addEventListener('touchmove', () => clearTimeout(chatPressTimer)); 
+                b.addEventListener('touchend', () => clearTimeout(chatPressTimer));
             });
-            document.getElementById('yx-chat-scroll').addEventListener('touchstart', e => { if(!e.target.closest('.chat-menu') && !e.target.closest('.yx-chat-bubble')) document.getElementById('chat-menu').style.display='none'; });
+            document.getElementById('yx-chat-scroll').addEventListener('touchstart', e => { 
+                if(!e.target.closest('.chat-menu') && !e.target.closest('.yx-chat-bubble')) {
+                    document.getElementById('chat-menu').style.display='none'; 
+                }
+            });
         }
-        function deleteChatBubble() { let c = yxContacts.find(x => x.id === currChatId); c.history.splice(curBubbleIdx, 1); renderChatHistory(); }
+        
+        function cAction(type) {
+            let c = yxContacts.find(x => x.id === currChatId);
+            let msgObj = c.history[curBubbleIdx];
+            
+            // 提取纯文本内容（去除 HTML 标签如图片和语音气泡）
+            let plainText = msgObj.m.replace(/<[^>]+>/g, '').trim();
+            if(!plainText && (msgObj.m.includes('<img') || msgObj.m.includes('<svg'))) plainText = '[特殊消息/图片]';
+            
+            if(type === 'copy') {
+                if(navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(plainText).then(() => {
+                        showModal('提示', '复制成功', null, 'alert');
+                    }).catch(() => {
+                        showModal('提示', '复制失败，请手动长按输入框复制', null, 'alert');
+                    });
+                } else {
+                    showModal('提示', '复制失败，当前环境不支持剪贴板操作', null, 'alert');
+                }
+            } else if(type === 'forward') {
+                let opts = yxContacts.filter(cf => !cf.isDeleted && !cf.isTemp && cf.id !== currChatId).map(cf => ({label: cf.name, value: cf.id})); 
+                if(opts.length === 0) return showModal("提示", '暂无其他联系人可转发', null, "alert"); 
+                showModal('选择要转发给的联系人', '', (v)=>{ 
+                    if(v) { 
+                        let f=yxContacts.find(x=>x.id===v); 
+                        f.history.push({t:'right', m: msgObj.m, sender: 'sys'});
+                        f.msg = plainText;
+                        saveYxContacts();
+                        showModal("提示", '已成功转发给：' + f.name, null, "alert"); 
+                    } 
+                }, 'select', opts);
+            } else if(type === 'quote') {
+                let ipt = document.getElementById('chat-ipt');
+                ipt.value = `「 ${plainText} 」\n- - - - - - - - - - - -\n` + ipt.value;
+                ipt.focus();
+            } else if(type === 'edit') {
+                showModal('提示', '该条消息不支持编辑', null, 'alert');
+            } else if(type === 'translate') {
+                showModal('提示', '正在翻译中...', null, 'alert');
+            } else if(type === 'multi') {
+                showModal('提示', '已进入多选模式', null, 'alert');
+            } else if(type === 'delete') {
+                deleteChatBubble();
+            }
+            document.getElementById('chat-menu').style.display = 'none';
+        }
 
-        // 发送消息
-        async function handleSendMsg() {
+        function deleteChatBubble() { 
+            let c = yxContacts.find(x => x.id === currChatId); 
+            c.history.splice(curBubbleIdx, 1); 
+            document.getElementById('chat-menu').style.display = 'none';
+            renderChatHistory(); 
+            saveYxContacts();
+        }
+
+        // --- 独立消息设置弹窗 ---
+        function openMsgSettingsView() {
+            closeAllBottomSheets();
+            let c = yxContacts.find(x => x.id === currChatId);
+            if(!c.msgConfig) c.msgConfig = { replyMode: 'multi-auto', prompt: c.prompt || '' };
+            
+            let mMode = c.msgConfig.replyMode;
+            let html = `
+                <div class="yx-s-card" style="padding:15px;">
+                    <div style="font-size:14px; font-weight:bold; color:#333; margin-bottom:10px;">AI回复生成模式</div>
+                    <div class="yx-s-row" onclick="setReplyMode('single')" style="padding: 12px 5px;">
+                        <div class="yx-s-label">单条消息回复</div>${mMode==='single'?'<svg style="width:20px;stroke:var(--blue);fill:none;stroke-width:2;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':''}
+                    </div>
+                    <div class="yx-s-row" onclick="setReplyMode('multi-auto')" style="padding: 12px 5px;">
+                        <div class="yx-s-label">自动多条消息 (长文拆分连续发送)</div>${mMode==='multi-auto'?'<svg style="width:20px;stroke:var(--blue);fill:none;stroke-width:2;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':''}
+                    </div>
+                    <div class="yx-s-row" onclick="setReplyMode('multi-persona')" style="padding: 12px 5px; border-bottom:none;">
+                        <div class="yx-s-label">根据人设生成多条消息 (JSON)</div>${mMode==='multi-persona'?'<svg style="width:20px;stroke:var(--blue);fill:none;stroke-width:2;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':''}
+                    </div>
+                </div>
+                <div class="yx-s-card" style="padding:15px; margin-top:15px;">
+                    <div style="font-size:14px; font-weight:bold; color:#333; margin-bottom:10px;">当前人设/情境预设</div>
+                    <textarea id="msg-cfg-prompt" class="api-input" style="height:120px;" placeholder="在此输入人物对话上下文预设...">${c.msgConfig.prompt}</textarea>
+                    <div class="api-btn" onclick="saveMsgSettings()">保存当前设置</div>
+                </div>
+            `;
+            document.getElementById('msg-settings-content').innerHTML = html;
+            document.getElementById('msg-settings-view').style.display = 'flex';
+        }
+
+        function setReplyMode(mode) {
+            let c = yxContacts.find(x => x.id === currChatId);
+            if(!c.msgConfig) c.msgConfig = { replyMode: 'multi-auto', prompt: c.prompt || '' };
+            c.msgConfig.replyMode = mode;
+            saveYxContacts();
+            openMsgSettingsView(); 
+        }
+
+        function saveMsgSettings() {
+            let c = yxContacts.find(x => x.id === currChatId);
+            if(!c.msgConfig) c.msgConfig = { replyMode: 'multi-auto', prompt: c.prompt || '' };
+            c.msgConfig.prompt = document.getElementById('msg-cfg-prompt').value;
+            c.prompt = c.msgConfig.prompt; 
+            saveYxContacts();
+            showModal('提示', '消息设置已保存！', null, 'alert');
+        }
+
+        // 语音、位置弹窗与发送逻辑
+        function openVoiceModal() {
+            document.getElementById('voice-modal').style.display = 'flex';
+            document.getElementById('v-sec').value = '';
+            document.getElementById('v-text').value = '';
+        }
+        function sendVoiceMsg() {
+            let sec = document.getElementById('v-sec').value.trim() || 3;
+            let text = document.getElementById('v-text').value.trim();
+            document.getElementById('voice-modal').style.display = 'none';
+            
+            let html = `<div class="yx-voice-bubble" onclick="toggleVoiceText(this, '${text}')">
+                            <div class="v-bar">
+                                <div class="voice-anim"><span></span><span></span><span></span><span></span></div>
+                                ${sec}"
+                            </div>
+                            <div class="v-text-box" style="display:none; font-size:12px; color:#666; margin-top:8px; border-top:1px solid #eee; padding-top:8px;">${text}</div>
+                        </div>`;
+            sendHtmlMsg(html);
+        }
+        function toggleVoiceText(el, text) {
+            if(!text) return;
+            let box = el.querySelector('.v-text-box');
+            if(box.style.display === 'none') { box.style.display = 'block'; } else { box.style.display = 'none'; }
+        }
+        
+        function openLocationModal() {
+            document.getElementById('loc-modal').style.display = 'flex';
+            document.getElementById('loc-name').value = '';
+            document.getElementById('loc-detail').value = '';
+            document.getElementById('loc-dist').value = '';
+        }
+        function sendLocationMsg() {
+            let name = document.getElementById('loc-name').value.trim() || '某位置';
+            let detail = document.getElementById('loc-detail').value.trim() || '暂无详细地址';
+            let dist = document.getElementById('loc-dist').value.trim() || '0m';
+            document.getElementById('loc-modal').style.display = 'none';
+            
+            // 定位卡片背景改为透明以继承气泡
+            let html = `<div style="background:transparent; border-radius:8px; overflow:hidden; width:200px; color:inherit; text-align:left;">
+                            <div style="padding:10px; background:rgba(255,255,255,0.15);">
+                                <div style="font-weight:bold; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${name}</div>
+                                <div style="font-size:11px; opacity:0.8; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${detail}</div>
+                            </div>
+                            <div style="height:80px; width:100%; position:relative; overflow:hidden;">
+                                <svg viewBox="0 0 100 60" style="width:100%;height:100%;background:#eef1f5; display:block;">
+                                    <path d="M0,30 Q50,40 100,20" stroke="#fff" stroke-width="6" fill="none"/><path d="M40,0 L60,100" stroke="#fff" stroke-width="6" fill="none"/>
+                                    <rect x="10" y="40" width="30" height="20" rx="4" fill="#dcedc1"/><path d="M50,25 C46,25 43,28 43,32 C43,37 50,45 50,45 C50,45 57,37 57,32 C57,28 54,25 50,25 Z" fill="#ff3b30"/><circle cx="50" cy="31" r="2.5" fill="#fff"/>
+                                </svg>
+                            </div>
+                            <div style="background:rgba(0,0,0,0.05); padding:8px 10px; font-size:10px; opacity:0.9; display:flex; justify-content:space-between;">
+                                <span>🗺️ 微信位置</span><span>相距 ${dist}</span>
+                            </div>
+                        </div>`;
+            sendHtmlMsg(html);
+        }
+
+        function sendHtmlMsg(htmlContent) {
+            let c = yxContacts.find(x => x.id === currChatId);
+            c.history.push({t:'right', m: htmlContent, sender: 'sys'}); 
+            c.msg = '[特殊消息]';
+            renderChatHistory(); renderYxContacts();
+        }
+
+        function sendChatImage(e) {
+            if(e.target.files[0]) {
+                let r = new FileReader();
+                r.onload = () => {
+                    let html = `<img src="${r.result}" style="max-width:100%; border-radius:8px;">`;
+                    sendHtmlMsg(html);
+                };
+                r.readAsDataURL(e.target.files[0]);
+            }
+            e.target.value = '';
+            document.getElementById('chat-plus-panel').classList.remove('open');
+        }
+        function sendChatFile(e) {
+            if(e.target.files[0]) {
+                let name = e.target.files[0].name;
+                // 文件卡片背景透明继承气泡
+                let html = `<div style="display:flex; align-items:center; gap:10px; background:transparent; padding:10px; border-radius:8px; color:inherit;">
+                                <svg viewBox="0 0 24 24" style="width:24px; stroke:currentColor; fill:none; stroke-width:2;"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                                <div style="font-size:12px; max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:bold;">${name}</div>
+                            </div>`;
+                sendHtmlMsg(html);
+            }
+            e.target.value = '';
+            document.getElementById('chat-plus-panel').classList.remove('open');
+        }
+
+        // 重新Roll逻辑
+        function handleReRoll() {
+            let btn = document.getElementById('chat-reroll-btn');
+            btn.style.color = '#ff3b30';
+            btn.querySelector('svg').style.stroke = '#ff3b30';
+            
+            let c = yxContacts.find(x => x.id === currChatId);
+            if(c.history.length === 0) return;
+            
+            let lastAiIdx = -1;
+            for(let i = c.history.length - 1; i >= 0; i--) {
+                if(c.history[i].t === 'left') {
+                    lastAiIdx = i;
+                    break;
+                }
+            }
+            
+            if(lastAiIdx !== -1) {
+                let ipt = document.getElementById('chat-ipt'); 
+                let oldVal = ipt.value;
+                ipt.value = "请换一种说法或动作重新回复我上一句话。";
+                handleSendMsg(true); 
+                ipt.value = oldVal;
+            } else {
+                showModal("提示", "没有可重新生成的回复", null, "alert");
+            }
+            
+            setTimeout(() => {
+                btn.style.color = ''; 
+                btn.querySelector('svg').style.stroke = '#888';
+            }, 1000);
+        }
+
+        // --- 群聊AI综合回复逻辑 ---
+        async function handleSendMsg(isReroll = false) {
             let ipt = document.getElementById('chat-ipt'); let v = ipt.value.trim(); if(!v) return;
             let c = yxContacts.find(x => x.id === currChatId);
             
-            c.history.push({t:'right', m: v, sender: 'sys'}); c.msg = v; ipt.value = ''; renderChatHistory(); renderYxContacts();
+            if(c.isGroup && c.allowNewMemberTalk === false) {
+                let myRole = c.owner === 'sys' ? 'owner' : (c.admins.includes('sys') ? 'admin' : 'member');
+                if(myRole === 'member') {
+                    showModal("提示", "本群已开启全员禁言，仅管理员可发言", null, "alert");
+                    return;
+                }
+            }
+
+            if(!isReroll) {
+                c.history.push({t:'right', m: v, sender: 'sys'}); c.msg = v; ipt.value = ''; renderChatHistory(); renderYxContacts();
+            } else {
+                ipt.value = '';
+            }
 
             if(!apiConfig.url || !apiConfig.key) { setTimeout(() => { c.history.push({t:'sys', m: '⚠️ 未连接API，请在桌面设置APP或API中添加配置。'}); c.msg = '⚠️ 未连接API'; renderChatHistory(); renderYxContacts(); }, 500); return; }
 
             document.getElementById('chat-typing').style.display = 'block';
-            let messages = []; let p = c.prompt || '';
-            if(c.isRoleplayMode && !c.isGroup) p += "\n请开启线上线下模式，使用小括号（例如：(微笑着看着你)）来描述你的动作、神态或心理活动，括号外是你说出的对话内容。";
-            if(p) messages.push({role: 'system', content: p});
+            let messages = []; 
+            if(!c.msgConfig) c.msgConfig = { replyMode: 'multi-auto', prompt: c.prompt || '' };
+            let cfg = c.msgConfig;
             
-            let histMsgs = c.history.filter(h=>h.t==='left'||h.t==='right').map(h=>({role: h.t==='left'?'assistant':'user', content: h.m}));
-            messages = messages.concat(histMsgs);
+            if(c.isGroup) {
+                // 群聊上下文构造
+                let groupPrompt = `你现在处于一个群聊环境中。群名：${c.name}。群公告：${cfg.prompt || '无'}。\n`;
+                let bots = c.members.filter(m => m !== 'sys').map(mid => yxContacts.find(x=>x.id===mid)).filter(Boolean);
+                groupPrompt += `群里除了人类用户（小鱼），还有以下几个AI成员：\n`;
+                bots.forEach(b => { groupPrompt += `- ID：${b.id}，昵称：${b.name}，人设：${b.prompt||'普通群友'}\n`; });
+                groupPrompt += `\n规则：根据最新的聊天内容，请决定哪个或哪几个AI成员会回复。输出必须是严格的JSON数组格式，例如：[{"id":"${bots[0]?bots[0].id:'c1'}", "reply":"哈哈好的"}]。如果你觉得不需要任何人回复，就输出空数组 []。请保持群聊的活跃和各自的人设风格。`;
+                messages.push({role: 'system', content: groupPrompt});
+
+                let histMsgs = c.history.slice(-10).filter(h=>h.t==='left'||h.t==='right').map(h=>{
+                    if(h.t === 'right') return {role: 'user', content: `[人类]小鱼 说: ${h.m}`};
+                    else {
+                        let senderName = yxContacts.find(x=>x.id===h.sender)?.name || '某群友';
+                        return {role: 'assistant', content: `[${h.sender}]${senderName} 说: ${h.m}`};
+                    }
+                });
+                messages = messages.concat(histMsgs);
+
+            } else {
+                // 单聊上下文构造
+                let p = cfg.prompt || '';
+                if(c.isRoleplayMode) p += "\n请开启线上线下模式，使用小括号（例如：(微笑着看着你)）来描述你的动作、神态或心理活动，括号外是你说出的对话内容。";
+                
+                if(cfg.replyMode === 'multi-persona') {
+                    p += "\n【重要要求】你必须根据当前人设，返回一段严格的 JSON 数组格式作为多条回复的拆分。例如：[\"第一句话\", \"第二句话的动作描述\"]，不要输出任何其他的文字说明。";
+                }
+                
+                if(p) messages.push({role: 'system', content: p});
+                let histMsgs = c.history.slice(-20).filter(h=>h.t==='left'||h.t==='right').map(h=>({role: h.t==='left'?'assistant':'user', content: h.m}));
+                messages = messages.concat(histMsgs);
+                
+                if(isReroll) {
+                    messages.push({role: 'user', content: v}); 
+                }
+            }
 
             try {
                 let res = await fetch(apiConfig.url + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiConfig.key}` }, body: JSON.stringify({ model: apiConfig.model, messages: messages }) });
                 let data = await res.json(); let reply = data.choices[0].message.content;
-                let sentences = reply.replace(/([。！？\n]+)/g, "$1|").split("|").map(s=>s.trim()).filter(s=>s.length>0);
                 
-                let delay = 500;
-                sentences.forEach((sentence, i) => {
-                    setTimeout(() => { 
-                        // 如果是群聊，随机分配一个发信人
-                        let senderId = c.id;
-                        if(c.isGroup && c.members.length > 1) {
-                            let others = c.members.filter(m => m !== 'sys');
-                            if(others.length > 0) senderId = others[Math.floor(Math.random() * others.length)];
+                if(c.isGroup) {
+                    try {
+                        let jsonMatch = reply.match(/\[.*\]/s);
+                        let replies = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
+                        let delay = 500;
+                        if(replies.length === 0) document.getElementById('chat-typing').style.display = 'none';
+                        replies.forEach((r, i) => {
+                            setTimeout(() => { 
+                                c.history.push({t:'left', m: r.reply, sender: r.id}); 
+                                c.msg = r.reply; 
+                                if(currChatId === c.id) renderChatHistory(); 
+                                renderYxContacts(); 
+                                if(i === replies.length - 1 && currChatId === c.id) document.getElementById('chat-typing').style.display = 'none'; 
+                            }, delay);
+                            delay += 1000 + (r.reply.length * 50); 
+                        });
+                    } catch(e) {
+                        document.getElementById('chat-typing').style.display = 'none';
+                        c.history.push({t:'sys', m: 'AI返回格式错误，未能正确解析群聊回复。'}); renderChatHistory(); renderYxContacts();
+                    }
+                } else {
+                    let parsedReplies = [];
+                    if(cfg.replyMode === 'multi-auto') {
+                        // 自动根据标点或换行拆分
+                        parsedReplies = reply.replace(/([。！？\n]+)/g, "$1|").split("|").map(s=>s.trim()).filter(s=>s.length>0);
+                    } else if(cfg.replyMode === 'multi-persona') {
+                        try {
+                            let jsonMatch = reply.match(/\[.*\]/s);
+                            parsedReplies = jsonMatch ? JSON.parse(jsonMatch[0]) : [reply];
+                        } catch(e) {
+                            parsedReplies = [reply]; // fallback
                         }
-                        c.history.push({t:'left', m: sentence, sender: senderId}); 
-                        c.msg = sentence; 
-                        if(currChatId === c.id) renderChatHistory(); 
-                        renderYxContacts(); 
-                        if(i === sentences.length - 1 && currChatId === c.id) document.getElementById('chat-typing').style.display = 'none'; 
-                    }, delay);
-                    delay += 1000 + (sentence.length * 50); 
-                });
+                    } else {
+                        // 单条
+                        parsedReplies = [reply.trim()];
+                    }
+
+                    let delay = 500;
+                    parsedReplies.forEach((sentence, i) => {
+                        setTimeout(() => { 
+                            c.history.push({t:'left', m: sentence, sender: c.id}); 
+                            c.msg = sentence; 
+                            if(currChatId === c.id) renderChatHistory(); 
+                            renderYxContacts(); 
+                            if(i === parsedReplies.length - 1 && currChatId === c.id) document.getElementById('chat-typing').style.display = 'none'; 
+                        }, delay);
+                        delay += 1000 + (sentence.length * 50); 
+                    });
+                }
+                
                 if(data.usage) addApiLog(data.usage.total_tokens);
             } catch(e) {
                 document.getElementById('chat-typing').style.display = 'none';
@@ -1902,7 +2911,6 @@
             document.getElementById('mind-action').innerText = arrAction[Math.floor(Math.random()*arrAction.length)];
             document.getElementById('mind-dirty').innerText = arrDirty[Math.floor(Math.random()*arrDirty.length)];
 
-            // 外观数据填充
             document.getElementById('mind-radius-range').value = c.radius || 0;
             document.getElementById('mind-v-radius').innerText = c.radius || 0;
             
@@ -1918,7 +2926,6 @@
             openBottomSheet('yx-mind-sheet');
         }
 
-        // 形状选择
         document.querySelectorAll('.shape-item:not(#btn-custom-shape)').forEach(el => {
             el.addEventListener('click', () => {
                 let c = yxContacts.find(x => x.id === currChatId);
@@ -1943,7 +2950,6 @@
             syncContactAppearance();
         }
 
-        // 专属头像框选择与滑动
         function loadMindFrame(e) { 
             if(e.target.files[0]){ let r=new FileReader(); r.onload=()=>{ let c = yxContacts.find(x => x.id === currChatId); c.frameConfig.img = r.result; updateMindFramePreview(); syncContactAppearance(); }; r.readAsDataURL(e.target.files[0]); } 
         }
@@ -1990,7 +2996,7 @@
             
             let html = '';
 
-            // 如果是群聊，渲染成员列表区域
+            // 群聊成员展示区
             if(c.isGroup) {
                 let membersGrid = '';
                 c.members.slice(0, 15).forEach(mid => {
@@ -2005,11 +3011,9 @@
                                     </div>`;
                 });
                 
-                // 加号
                 membersGrid += `<div style="display:flex; flex-direction:column; align-items:center; width:45px; gap:5px; cursor:pointer;" onclick="addGroupMember()">
                                     <div style="width:40px;height:40px;border-radius:10px;border:1px dashed #ccc;display:flex;justify-content:center;align-items:center;"><svg viewBox="0 0 24 24" style="width:20px;stroke:#888;fill:none;stroke-width:2;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
                                 </div>`;
-                // 减号 (仅群主/管理可见)
                 let myRole = c.owner === 'sys' ? 'owner' : (c.admins.includes('sys') ? 'admin' : 'member');
                 if(myRole === 'owner' || myRole === 'admin') {
                     membersGrid += `<div style="display:flex; flex-direction:column; align-items:center; width:45px; gap:5px; cursor:pointer;" onclick="openKickSheet()">
@@ -2020,7 +3024,6 @@
                 html += `<div class="yx-s-card" style="padding:15px 20px;"><div style="display:flex; gap:15px; flex-wrap:wrap;">${membersGrid}</div></div>`;
             }
 
-            // 头部基本信息 (单聊和群聊共用)
             let editTitleClick = c.isGroup ? `editGroupField('name')` : `editContactField('name')`;
             let editIdClick = c.isGroup ? `editGroupField('wechatId')` : `editContactField('wechatId')`;
             let idLabel = c.isGroup ? '群号ID' : '鱼信ID';
@@ -2036,18 +3039,25 @@
 
             if(c.isGroup) {
                 let myRole = c.owner === 'sys' ? 'owner' : (c.admins.includes('sys') ? 'admin' : 'member');
+                if(!c.announcements) c.announcements = [];
+                let noticeTxt = c.announcements.length > 0 ? c.announcements[0].content : '暂无群公告';
+
                 html += `
                 <div class="yx-s-card" style="margin-bottom:15px;">
-                    <div class="yx-s-row" onclick="editContactPrompt()">
+                    <div class="yx-s-row" onclick="openGroupAnnounceView()">
                         <div class="yx-s-label">群公告</div>
-                        <div class="yx-s-val"><span style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.prompt || '暂未设置'}</span><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                        <div class="yx-s-val"><span style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${noticeTxt}</span><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
                     </div>
                     <div class="yx-s-row" onclick="toggleContactSw(event, 'isRoleplayMode')">
-                        <div class="yx-s-label">置顶指定群公告</div><div class="ios-sw ${c.isRoleplayMode ? 'on':''}"></div>
+                        <div class="yx-s-label">在聊天顶部展示横幅</div><div class="ios-sw ${c.isRoleplayMode ? 'on':''}"></div>
                     </div>
                 </div>
 
                 <div class="yx-s-card" style="margin-bottom:15px;">
+                    <div class="yx-s-row" onclick="openMsgSettingsView()">
+                        <div class="yx-s-label">消息设置</div>
+                        <div class="yx-s-val"><span style="font-size:12px;color:#888;">AI回复/上下文</span><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                    </div>
                     <div class="yx-s-row" onclick="editMyGroupNickname()">
                         <div class="yx-s-label">我在本群的昵称</div><div class="yx-s-val"><span>${c.myNickname || sysUser.name}</span><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
                     </div>
@@ -2060,9 +3070,9 @@
                 let gName = initGroups.find(g=>g.id===c.groupId)?.name || '未分组';
                 html += `
                 <div class="yx-s-card" style="margin-bottom:15px;">
-                    <div class="yx-s-row" onclick="editContactPrompt()">
-                        <div class="yx-s-label">人设</div>
-                        <div class="yx-s-val"><span style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.prompt || '暂未设置'}</span><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                    <div class="yx-s-row" onclick="openMsgSettingsView()">
+                        <div class="yx-s-label">消息设置</div>
+                        <div class="yx-s-val"><span style="font-size:12px;color:#888;">多条连发/人设</span><svg style="width:16px; stroke:#bbb; fill:none;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
                     </div>
                     <div class="yx-s-row" onclick="toggleContactSw(event, 'isRoleplayMode')">
                         <div class="yx-s-label">线上线下模式</div><div class="ios-sw ${c.isRoleplayMode ? 'on':''}"></div>
@@ -2079,7 +3089,6 @@
                 </div>`;
             }
 
-            // 通用下半部分
             html += `
                 <div class="yx-s-card" style="margin-bottom:15px;">
                     <div class="yx-s-row" onclick="toggleContactSw(event, 'isTop')">
@@ -2107,6 +3116,77 @@
             openBottomSheet('yx-contact-sheet');
         }
 
+        // --- 群公告独立界面 ---
+        function openGroupAnnounceView() {
+            renderAnnouncements();
+            document.getElementById('group-announce-view').style.display = 'flex';
+        }
+        function renderAnnouncements() {
+            let c = yxContacts.find(x => x.id === currChatId);
+            if(!c.announcements) c.announcements = [];
+            let box = document.getElementById('announce-list-container');
+            box.innerHTML = '';
+            
+            let myRole = c.owner === 'sys' ? 'owner' : (c.admins.includes('sys') ? 'admin' : 'member');
+            let canEdit = (myRole === 'owner' || myRole === 'admin' || !c.onlyAdminEdit);
+
+            document.getElementById('btn-add-announce').style.display = canEdit ? 'block' : 'none';
+
+            if(c.announcements.length === 0) {
+                box.innerHTML = '<div style="text-align:center;color:#aaa;font-size:13px;margin-top:50px;">暂无群公告</div>';
+                return;
+            }
+
+            c.announcements.forEach((a, i) => {
+                let senderName = a.sender === 'sys' ? (c.myNickname || sysUser.name) : (yxContacts.find(x=>x.id===a.sender)?.name || '未知');
+                box.innerHTML += `
+                    <div class="yx-s-card" style="padding:15px; display:flex; flex-direction:column; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <div style="width:24px; height:24px; background:var(--blue); border-radius:50%; display:flex; justify-content:center; align-items:center; color:#fff; font-size:12px; font-weight:bold;">${senderName.charAt(0)}</div>
+                                <span style="font-size:14px; font-weight:bold; color:#333;">${senderName}</span>
+                            </div>
+                            <span style="font-size:11px; color:#aaa;">${a.time}</span>
+                        </div>
+                        <div style="font-size:14px; color:#555; line-height:1.5; white-space:pre-wrap;">${a.content}</div>
+                        ${canEdit ? `<div style="display:flex; justify-content:flex-end; gap:15px; margin-top:10px; border-top:1px solid #f0f0f0; padding-top:10px;">
+                            <span style="font-size:12px; color:var(--blue); cursor:pointer;" onclick="editAnnounce(${i})">编辑</span>
+                            <span style="font-size:12px; color:#ff3b30; cursor:pointer;" onclick="delAnnounce(${i})">删除</span>
+                        </div>` : ''}
+                    </div>
+                `;
+            });
+        }
+        function addNewAnnounce() {
+            showModal('发布新群公告', '', (v) => {
+                if(v && v.trim()) {
+                    let c = yxContacts.find(x => x.id === currChatId);
+                    c.announcements.unshift({ sender: 'sys', content: v.trim(), time: new Date().toLocaleString() });
+                    c.history.push({t:'sys', m: `${c.myNickname || sysUser.name} 发布了新的群公告`});
+                    renderAnnouncements(); openContactSettings(); handleOpenChat(currChatId);
+                }
+            }, 'textarea');
+        }
+        function editAnnounce(idx) {
+            let c = yxContacts.find(x => x.id === currChatId);
+            showModal('编辑群公告', c.announcements[idx].content, (v) => {
+                if(v && v.trim()) {
+                    c.announcements[idx].content = v.trim(); c.announcements[idx].time = new Date().toLocaleString() + ' (已编辑)';
+                    renderAnnouncements(); openContactSettings(); handleOpenChat(currChatId);
+                }
+            }, 'textarea');
+        }
+        function delAnnounce(idx) {
+            showModal('确认删除', '确定要删除这条群公告吗？', (res) => {
+                if(res) {
+                    let c = yxContacts.find(x => x.id === currChatId);
+                    c.announcements.splice(idx, 1);
+                    renderAnnouncements(); openContactSettings(); handleOpenChat(currChatId);
+                }
+            }, 'confirm');
+        }
+
+
         // --- 群管理专属操作 ---
         function openGroupManageSheet() {
             let c = yxContacts.find(x => x.id === currChatId);
@@ -2114,11 +3194,14 @@
             
             let html = `
                 <div class="yx-s-card" style="margin-bottom:15px;">
-                    <div class="yx-s-row" onclick="toggleContactSw(event, 'joinApprove')">
+                    <div class="yx-s-row" onclick="toggleGroupSysSw(event, 'joinApprove', '进群需群主/群管理同意')">
                         <div class="yx-s-label">进群需群主/群管理同意</div><div class="ios-sw ${c.joinApprove ? 'on':''}"></div>
                     </div>
-                    <div class="yx-s-row" onclick="toggleContactSw(event, 'onlyAdminEdit')">
+                    <div class="yx-s-row" onclick="toggleGroupSysSw(event, 'onlyAdminEdit', '仅群主/群管理可修改群昵称')">
                         <div class="yx-s-label">仅群主/群管理可修改群昵称</div><div class="ios-sw ${c.onlyAdminEdit ? 'on':''}"></div>
+                    </div>
+                    <div class="yx-s-row" onclick="toggleGroupSysSw(event, 'allowNewMemberTalk', '全员禁言')">
+                        <div class="yx-s-label">允许群成员发消息 (关闭即全员禁言)</div><div class="ios-sw ${c.allowNewMemberTalk ? 'on':''}"></div>
                     </div>
                 </div>
             `;
@@ -2131,6 +3214,29 @@
             }
             document.getElementById('yx-group-manage-content').innerHTML = html;
             openBottomSheet('yx-group-manage-sheet');
+        }
+
+        // 带系统提示的群开关切换
+        function toggleGroupSysSw(event, key, labelName) {
+            event.stopPropagation();
+            let c = yxContacts.find(x => x.id === currChatId);
+            c[key] = !c[key];
+            
+            // 系统播报
+            let statusStr = c[key] ? '已开启' : '已关闭';
+            if(key === 'allowNewMemberTalk') statusStr = c[key] ? '已关闭全员禁言' : '已开启全员禁言';
+            c.history.push({t:'sys', m: `${c.myNickname || sysUser.name} ${statusStr}「${labelName}」`});
+            
+            openGroupManageSheet();
+            renderYxContacts();
+            handleOpenChat(currChatId);
+        }
+
+        function toggleContactSw(event, key) { 
+            event.stopPropagation(); let c = yxContacts.find(x => x.id === currChatId); 
+            c[key] = !c[key]; 
+            openContactSettings(); renderYxContacts(); 
+            if(key === 'isBlack' || key === 'isRoleplayMode') handleOpenChat(currChatId); 
         }
 
         function editMyGroupNickname() { 
@@ -2149,8 +3255,12 @@
             showModal(title, c[field], (v) => { 
                 if(v && v.trim()) { 
                     c[field] = v.trim(); 
-                    if(field==='name') { c.pinyin=v.trim().charAt(0).toUpperCase(); document.getElementById('chat-name').innerText=`${v.trim()} (${c.members.length})`;} 
-                    openContactSettings(); renderYxContacts(); 
+                    if(field==='name') { 
+                        c.pinyin=v.trim().charAt(0).toUpperCase(); 
+                        document.getElementById('chat-name').innerText=`${v.trim()} (${c.members.length})`;
+                        c.history.push({t:'sys', m: `${c.myNickname || sysUser.name} 修改群名为 ${v.trim()}`});
+                    } 
+                    openContactSettings(); renderYxContacts(); handleOpenChat(currChatId);
                 } 
             }, 'input'); 
         }
@@ -2162,7 +3272,15 @@
             
             let opts = available.map(x => ({label: x.name, value: x.id}));
             showModal('选择要邀请的好友', '', (v) => {
-                if(v) { c.members.push(v); openContactSettings(); renderYxContacts(); document.getElementById('chat-name').innerText=`${c.name} (${c.members.length})`; showModal("提示", "邀请成功", null, "alert"); }
+                if(v) { 
+                    c.members.push(v); 
+                    let invitee = yxContacts.find(x=>x.id===v);
+                    c.history.push({t:'sys', m: `${c.myNickname || sysUser.name} 邀请 ${invitee.name} 加入了群聊`});
+                    openContactSettings(); renderYxContacts(); 
+                    document.getElementById('chat-name').innerText=`${c.name} (${c.members.length})`; 
+                    showModal("提示", "邀请成功", null, "alert"); 
+                    handleOpenChat(currChatId);
+                }
             }, 'select', opts);
         }
 
@@ -2194,10 +3312,15 @@
             let cbs = document.querySelectorAll('.kick-cb:checked');
             if(cbs.length === 0) return showModal("提示", "请先选择要移出的成员", null, "alert");
             let toKick = Array.from(cbs).map(cb => cb.value);
+            let kickNames = toKick.map(id => yxContacts.find(x=>x.id===id)?.name).join('、');
+
             c.members = c.members.filter(m => !toKick.includes(m));
             c.admins = c.admins.filter(a => !toKick.includes(a));
+            
+            c.history.push({t:'sys', m: `${c.myNickname || sysUser.name} 将 ${kickNames} 移出了群聊`});
+            
             closeBottomSheet('yx-group-kick-sheet');
-            openContactSettings(); renderYxContacts();
+            openContactSettings(); renderYxContacts(); handleOpenChat(currChatId);
             document.getElementById('chat-name').innerText=`${c.name} (${c.members.length})`;
             showModal("提示", "已成功移出选定成员", null, "alert");
         }
@@ -2211,7 +3334,13 @@
                 return {label: fc ? fc.name : '未知', value: mid};
             });
             showModal('选择新群主', '', (v) => {
-                if(v) { c.owner = v; c.admins = c.admins.filter(a => a !== v); c.admins.push('sys'); closeAllBottomSheets(); renderYxContacts(); showModal("提示", "群主转让成功", null, "alert"); }
+                if(v) { 
+                    c.owner = v; c.admins = c.admins.filter(a => a !== v); c.admins.push('sys'); 
+                    let newOwnerName = yxContacts.find(x=>x.id===v)?.name;
+                    c.history.push({t:'sys', m: `${c.myNickname || sysUser.name} 将群主转让给了 ${newOwnerName}`});
+                    closeAllBottomSheets(); renderYxContacts(); handleOpenChat(currChatId);
+                    showModal("提示", "群主转让成功", null, "alert"); 
+                }
             }, 'select', opts);
         }
 
@@ -2225,7 +3354,17 @@
                 return {label: (fc ? fc.name : '未知') + isAd, value: mid};
             });
             showModal('选人切换管理员状态', '', (v) => {
-                if(v) { if(c.admins.includes(v)) c.admins = c.admins.filter(a => a !== v); else c.admins.push(v); openGroupManageSheet(); showModal("提示", "操作成功", null, "alert"); }
+                if(v) { 
+                    let targetName = yxContacts.find(x=>x.id===v)?.name;
+                    if(c.admins.includes(v)) {
+                        c.admins = c.admins.filter(a => a !== v); 
+                        c.history.push({t:'sys', m: `${c.myNickname || sysUser.name} 取消了 ${targetName} 的管理员身份`});
+                    } else {
+                        c.admins.push(v); 
+                        c.history.push({t:'sys', m: `${c.myNickname || sysUser.name} 将 ${targetName} 设为了管理员`});
+                    }
+                    openGroupManageSheet(); handleOpenChat(currChatId); showModal("提示", "操作成功", null, "alert"); 
+                }
             }, 'select', opts);
         }
 
@@ -2237,8 +3376,6 @@
 
         function loadContactAva(e){ if(e.target.files[0]){ let r=new FileReader(); r.onload=()=>{ let c = yxContacts.find(x => x.id === currChatId); c.avaImg = r.result; syncContactAppearance(); openContactSettings(); }; r.readAsDataURL(e.target.files[0]); } }
         function editContactField(field) { let c = yxContacts.find(x => x.id === currChatId); let title = field==='name'?'修改备注名':'修改鱼信ID'; showModal(title, c[field], (v) => { if(v&&v.trim()) { c[field] = v.trim(); if(field==='name') { c.pinyin=v.trim().charAt(0).toUpperCase(); document.getElementById('chat-name').innerText=v.trim();} openContactSettings(); renderYxContacts(); } }, 'input'); }
-        function editContactPrompt() { let c = yxContacts.find(x => x.id === currChatId); let label = c.isGroup ? '修改群公告' : '修改人设'; showModal(label, c.prompt, (v) => { if(v !== false) { c.prompt = v.trim(); openContactSettings(); } }, 'textarea'); }
-        function toggleContactSw(event, key) { event.stopPropagation(); let c = yxContacts.find(x => x.id === currChatId); c[key] = !c[key]; if(key==='joinApprove' || key==='onlyAdminEdit') openGroupManageSheet(); else openContactSettings(); renderYxContacts(); if(key === 'isBlack') handleOpenChat(currChatId); }
         function clearHistory() { showModal("确认清空", "确定清空聊天记录吗？", (res) => { if(res) { let c = yxContacts.find(x => x.id === currChatId); c.history = []; c.msg = ''; renderChatHistory(); renderYxContacts(); closeAllBottomSheets(); } }, "confirm"); }
         function actionShareFriend() { let opts = yxContacts.filter(c => !c.isDeleted && !c.isTemp && c.id !== currChatId && !c.isGroup).map(c => ({label: c.name, value: c.id})); if(opts.length === 0) return showModal("提示", '暂无其他联系人可发送', null, "alert"); showModal('选择要发送给的联系人', '', (v)=>{ if(v) { let f=yxContacts.find(x=>x.id===v); showModal("提示", '已成功发送名片给：' + f.name, null, "alert"); closeAllBottomSheets(); } }, 'select', opts); }
         function actionStarFriend() { showModal("提示", '名片收藏成功！', null, "alert"); closeAllBottomSheets(); }
@@ -2253,7 +3390,7 @@
             document.getElementById('yx-group-list').innerHTML = html;
         }
         function selGroup(gId) { let c = yxContacts.find(x => x.id === currChatId); c.groupId = gId; renderGroupList(); openContactSettings(); renderYxContacts(); const group = initGroups.find(g => g.id === gId); let tag = document.getElementById('chat-group-tag'); if(group && !c.isGroup) { tag.style.display='inline-block'; tag.innerText=group.name; tag.style.background=`${hexToRgba(group.color, 0.15)}`; tag.style.color=group.color; } }
-        function changeColorBlock(e, gId, oldColor) { e.stopPropagation(); showModal('输入十六进制颜色值', oldColor, (v) => { if(v) { let g=initGroups.find(x=>x.id===gId); g.color=v; renderGroupTabs(); renderGroupList(); openContactSettings(); renderYxContacts(); } }, 'input'); }
+        function changeColorBlock(e, gId, oldColor) { e.stopPropagation(); showModal('输入十六进制颜色值 (如: #ff0000)', oldColor, (v) => { if(v) { v=v.trim(); if(!v.startsWith('#')) v='#'+v; if(v.length===4) v='#'+v[1]+v[1]+v[2]+v[2]+v[3]+v[3]; let g=initGroups.find(x=>x.id===gId); g.color=v; renderGroupTabs(); renderGroupList(); openContactSettings(); renderYxContacts(); } }, 'input'); }
         function editGroupName(e, gId, oldName) { e.stopPropagation(); showModal('修改分组名', oldName, (v) => { if(v) { let g=initGroups.find(x=>x.id===gId); g.name=v; renderGroupTabs(); renderGroupList(); openContactSettings(); renderYxContacts(); } }, 'input'); }
         function addGroup() { showModal('新增分组名', '新分组', (v) => { if(v) { initGroups.push({id:'g'+Date.now(), name:v, color:'#888'}); renderGroupTabs(); renderGroupList(); } }, 'input'); }
     </script>
